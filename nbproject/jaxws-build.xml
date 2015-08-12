@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+        *** GENERATED FROM jax-ws.xml - DO NOT EDIT !                             ***
+        *** TO MODIFY wsimport options USE Web Service node -> Edit WS Attributes ***
+        *** TO CHANGE TARGETS GENERATED TO jaxws-build.xml COPY THOSE             ***
+        *** TARGETS TO ../build.xml AND MODIFY THAT FILE INSTEAD                  ***
+
+        --><project xmlns:xalan="http://xml.apache.org/xslt" xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3" xmlns:jaxws="http://www.netbeans.org/ns/jax-ws/1">
+    <!--
+                ===================
+                JAX-WS WSIMPORT SECTION
+                ===================
+            -->
+    <target name="wsimport-init" depends="init">
+        <mkdir dir="${build.generated.sources.dir}/jax-ws"/>
+        <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+            <classpath path="${libs.jaxws21.classpath}"/>
+        </taskdef>
+    </target>
+    <target name="wsimport-client-order2" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/order2"/>
+        <property name="wsdl-order2" location="xml-resources/web-service-references/order2/wsdl/order2.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/order2" destdir="${build.generated.dir}/jax-wsCache/order2" wsdl="${wsdl-order2}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="file:/home/dimasik/.netbeans/8.0/config/WebServices/order2/catalog/wstest.dpd.ru/services/order2.wsdl" xnocompile="true" xendorsed="true" package="experiments">
+            <depends file="${wsdl-order2}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/order2"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/order2">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-order2" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/order2"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/experiments"/>
+    </target>
+    <target name="wsimport-client-geography" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/geography"/>
+        <property name="wsdl-geography" location="xml-resources/web-service-references/geography/wsdl/geography.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/geography" destdir="${build.generated.dir}/jax-wsCache/geography" wsdl="${wsdl-geography}" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" fork="false" wsdlLocation="file:/home/dimasik/.netbeans/8.0/config/WebServices/geography/catalog/ws.dpd.ru/services/geography.wsdl" xnocompile="true" xendorsed="true" package="geography">
+            <depends file="${wsdl-geography}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/geography"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/geography">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-geography" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/geography"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/geography"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-order2, wsimport-client-geography"/>
+</project>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/home/dimasik/.netbeans/8.0/config/WebServices/order2/catalog/wstest.dpd.ru/services/order2.wsdl" uri="xml-resources/web-service-references/order2/wsdl/order2.wsdl"/>
+    <system systemId="http://wstest.dpd.ru:80/services/order2?xsd=1" uri="xml-resources/web-service-references/order2/wsdl/wstest.dpd.ru_80/services/order2.xsd_1.xsd"/>
+    <system systemId="file:/home/dimasik/.netbeans/8.0/config/WebServices/geography/catalog/ws.dpd.ru/services/geography.wsdl" uri="xml-resources/web-service-references/geography/wsdl/geography.wsdl"/>
+</catalog>
