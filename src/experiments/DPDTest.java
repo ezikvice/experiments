@@ -52,6 +52,7 @@ public class DPDTest {
         senderAddr.setInstructions("подъезд со стороны двора");
 
         header.setSenderAddress(senderAddr);
+        
         header.setPickupTimePeriod("9-18");
 
         orderData.setHeader(header);
@@ -90,6 +91,23 @@ public class DPDTest {
 
         orderData.getOrder().add(order);
 
+
+        // создание адреса
+//        try {
+//            DPDOrderService service = new DPDOrderService();
+//            DPDOrder port = service.getDPDOrderPort();
+//            // TODO process result here
+//            java.util.List<DpdOrderStatus> resultList = port.createOrder(orderData);
+//            DpdOrderStatus result = resultList.get(0);
+//            System.out.println("Status = "+result.getStatus()+"\n"
+//                    + "order = " + result.getOrderNum() + "\n"
+//                    + "message = " + result.getErrorMessage()
+//            );
+//            } 
+//        catch (Exception ex) {
+//                 ex.printStackTrace();
+//            }
+        
         // создание заказа
 //        try {
 //            DPDOrderService service = new DPDOrderService();
