@@ -29,7 +29,14 @@ import experiments.DPDTest;
 public class Experiments {
     
     public static void main(String[] args) {
-        DPDTest.run();
+        
+        DPDTest t = new DPDTest();
+        t.makeExcelFromAdressList();
+        
+//        String a = "2014.12.31";
+//        String[] b = a.split("\\.");
+//        System.out.println(b[0]);
+        
     }
     
 
