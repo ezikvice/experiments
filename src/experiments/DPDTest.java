@@ -473,18 +473,17 @@ public class DPDTest {
                 
                 ClientRetailAddress cra = new ClientRetailAddress();
                 
-                cra.setClientRetailAddressCity(Arrays.asList(listIterator).get(0).toString());
-                cra.setClientRetailAddressStreet(Arrays.asList(listIterator).get(1).toString());
-                cra.setClientRetailAddressHouseNumber(Arrays.asList(listIterator).get(2).toString());
-                cra.setClientRetailAddressHouseCase(Arrays.asList(listIterator).get(3).toString());
-                cra.setClientRetailAddressApartment(Arrays.asList(listIterator).get(4).toString());
-                
-                String rawStreetString = (String) listIterator.next();
+                String[] currentAddress = (String[]) listIterator.next();
+                cra.setClientRetailAddressCity(currentAddress[0]);
+                cra.setClientRetailAddressStreet(currentAddress[1]);
+                cra.setClientRetailAddressHouseNumber(currentAddress[2]);
+                cra.setClientRetailAddressHouseCase(currentAddress[3]);
+                cra.setClientRetailAddressApartment(currentAddress[4]);
 
                 row = sheet.createRow(r);
                 Cell streetCell = row.createCell(0);
                 streetCell.setCellType(Cell.CELL_TYPE_STRING);
-                streetCell.setCellValue(rawStreetString);
+                streetCell.setCellValue(currentAddress[1]);
 
                 Map<String, String> alexMap = new HashMap<>();
                 parseAddressFromString(alexMap, cra);
@@ -518,7 +517,7 @@ public class DPDTest {
                 row2 = sheet2.createRow(r);
                 Cell streetCell2 = row2.createCell(0);
                 streetCell2.setCellType(Cell.CELL_TYPE_STRING);
-                streetCell2.setCellValue(rawStreetString);
+                streetCell2.setCellValue(currentAddress[1]);
 
                 r += 1;
             } catch (Exception e) {
