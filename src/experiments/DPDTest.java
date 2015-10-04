@@ -442,7 +442,7 @@ public class DPDTest {
 //            BufferedReader reader = new BufferedReader(new FileReader(path));
             
             //http://opencsv.sourceforge.net/            
-            CSVReader csvReader = new CSVReader(new FileReader(path),';');
+            CSVReader csvReader = new CSVReader(new FileReader(path),'|', '~');
             String [] nextLine;
 //            String line;
             while ((nextLine = csvReader.readNext()) != null) {
@@ -474,6 +474,7 @@ public class DPDTest {
                 ClientRetailAddress cra = new ClientRetailAddress();
                 
                 String[] currentAddress = (String[]) listIterator.next();
+                
                 cra.setClientRetailAddressCity(currentAddress[0]);
                 cra.setClientRetailAddressStreet(currentAddress[1]);
                 cra.setClientRetailAddressHouseNumber(currentAddress[2]);
