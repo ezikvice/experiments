@@ -482,38 +482,23 @@ public class DPDTest {
                 cra.setClientRetailAddressApartment(currentAddress[4]);
 
                 row = sheet.createRow(r);
-                Cell streetCell = row.createCell(0);
-                streetCell.setCellType(Cell.CELL_TYPE_STRING);
-                streetCell.setCellValue(currentAddress[1]);
 
                 Map<String, String> alexMap = new HashMap<>();
                 parseAddressFromString(alexMap, cra);
 
-                Cell alexStreetCell = row.createCell(1);
                 
                 CellStyle style = wb.createCellStyle();
                 Short index = 0;
                 if(alexMap.get("style")!=""){
                     index = Short.parseShort(alexMap.get("style"));
                 }
-                style.setFillForegroundColor(index);
-                style.setFillPattern(CellStyle.FINE_DOTS);
                 
-                alexStreetCell.setCellType(Cell.CELL_TYPE_STRING);
-                alexStreetCell.setCellValue(alexMap.get("street"));
-                alexStreetCell.setCellStyle(style);
+                setCellString(row, 0, currentAddress[1], style, index);
+                setCellString(row, 1, alexMap.get("street"), style, index);
+                setCellString(row, 2, alexMap.get("house"), style, index);
+                setCellString(row, 3, alexMap.get("houseCase"), style, index);
+                setCellString(row, 4, alexMap.get("flat"), style, index);
 
-                Cell alexHouseCell = row.createCell(2);
-                alexHouseCell.setCellType(Cell.CELL_TYPE_STRING);
-                alexHouseCell.setCellValue(alexMap.get("house"));
-
-                Cell alexHouseCaseCell = row.createCell(3);
-                alexHouseCaseCell.setCellType(Cell.CELL_TYPE_STRING);
-                alexHouseCaseCell.setCellValue(alexMap.get("houseCase"));
-
-                Cell alexFlatCell = row.createCell(4);
-                alexFlatCell.setCellType(Cell.CELL_TYPE_STRING);
-                alexFlatCell.setCellValue(alexMap.get("flat"));
                 
                 row2 = sheet2.createRow(r);
                 Cell streetCell2 = row2.createCell(0);
@@ -537,6 +522,15 @@ public class DPDTest {
 
     }
 
+    public void setCellString(Row row, Integer cellNum, String value, CellStyle style, Short colorIndex){
+        style.setFillForegroundColor(colorIndex);
+        style.setFillPattern(CellStyle.BORDER_HAIR);
+        
+        Cell cell = row.createCell(cellNum);
+        cell.setCellType(Cell.CELL_TYPE_STRING);
+        cell.setCellStyle(style);
+        cell.setCellValue(value);
+    }
 //    public List<DpdOrderStatus> getOrderStatus(DPDOrder service, String invoiceId) {
 //        try {
 //            final List<DpdOrderStatus> orderStatusList = service.createOrder(ordersData);
