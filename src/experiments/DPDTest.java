@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 /**
  *
@@ -45,8 +46,8 @@ public class DPDTest {
 
     private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*(\\d)+(/\\d)*[а-я]?)";
     private final String HOUSE_CASE_FLAT_REGEX = "([\\d]+(/\\d+)?(-)[\\d]+(-[\\d]+)?)";
-    private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*(\\d)+)";
-    private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*(\\d)+)";
+    private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*((\\d)+))";
+    private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*((\\d)+))";
 
     Boolean hasMatching(String requestString, String regex) {
         Pattern housePattern = Pattern.compile(regex.toLowerCase());
@@ -339,11 +340,50 @@ public class DPDTest {
         String rawStreetString = clientRetailAddress.getClientRetailAddressStreet();
         
         // если в улице есть шаблон вида дом(-корпус)-квартира
+        // в дпд адрес в поле "улица" запихиваем первую часть (до дома)
+        //   и если в clientRetailAddress нет какого-либо из полей дом-корпус-квартира,
+        //     то запихиваем соответствующее поле из второй части строки
+        // все остальное во второй части - мусор, выкидываем
         if (hasHouseCaseFlatString(rawStreetString)) {
             splitStringByRegex(addressMap, rawStreetString, HOUSE_CASE_FLAT_REGEX);
             
+            dpdAddress.setStreet(addressMap.get("before"));
+            String[] afterString = addressMap.get("after").split("-");
+            
+            
+            // может быть 2 формата: дом-квартира или дом-корпус-квартира
+            // 
+            if (afterString.length == 2) {
+                dpdAddress.setHouse(afterString[0]);
+                dpdAddress.setFlat(afterString[1]);
+            } else if (afterString.length == 3) {
+                dpdAddress.setHouse(afterString[0]);
+                dpdAddress.setHouseKorpus(afterString[1]);
+                dpdAddress.setFlat(afterString[2]);
+            }
+        }
+        // дальше начинаем искать адрес начиная с квартиры
+        else {
+            if(hasFlatString(rawStreetString)){
+                splitStringByRegex(addressMap, rawStreetString, FLAT_REGEX);
+                dpdAddress.setStreet(addressMap.get("before"));
+                String afterString = addressMap.get("after");
+
+                // выцепляем квартиру, остальное все что справа - мусор
+                Pattern p = Pattern.compile(FLAT_REGEX);
+                Matcher m = p.matcher(afterString);
+                dpdAddress.setFlat(m.group(4)); 
+                rawStreetString = addressMap.get("before"); // TODO: проверить
+            }
+            if(hasHouseCaseString(rawStreetString)){
+                splitStringByRegex(addressMap, rawStreetString, HOUSECASE_REGEX);
+                
+                
+            }
             
         }
+        
+        
 
     }
 
@@ -524,7 +564,9 @@ public class DPDTest {
 
     public void setCellString(Row row, Integer cellNum, String value, CellStyle style, Short colorIndex){
         style.setFillForegroundColor(colorIndex);
-        style.setFillPattern(CellStyle.BORDER_HAIR);
+        style.setBorderBottom(CellStyle.BORDER_HAIR);
+        style.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+        style.setFillPattern(CellStyle.FINE_DOTS);
         
         Cell cell = row.createCell(cellNum);
         cell.setCellType(Cell.CELL_TYPE_STRING);
