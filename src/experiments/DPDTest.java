@@ -372,6 +372,7 @@ public class DPDTest {
                 strMap.put("houseCase", afterString[1]);
                 strMap.put("flat", afterString[2]);
             }
+            strMap.put("style", "21");
         } // дальше начинаем искать адрес начиная с квартиры
         else {
             // если есть квартира
@@ -389,6 +390,7 @@ public class DPDTest {
                 }
                 strMap.put("flat", flatNum); // TODO: проверить
                 rawStreetString = addressMap.get("before");
+                strMap.put("style", "22");
             }
             // если есть корпус
             if (hasHouseCaseString(rawStreetString)) {
@@ -405,6 +407,7 @@ public class DPDTest {
                 }
                 strMap.put("houseCase", houseCase);  // TODO: проверить
                 rawStreetString = addressMap.get("before");
+                strMap.put("style", "22");
             }
             // если есть дом
             if (hasHouseString(rawStreetString)) {
@@ -422,6 +425,7 @@ public class DPDTest {
 
                 strMap.put("house", houseNum);  // TODO: проверить
                 rawStreetString = addressMap.get("before");
+                strMap.put("style", "22");
             } else { // если слово дом не нашли, пробуем найти просто по дроби
 
                 strMap.put("street", rawStreetString);
@@ -567,8 +571,8 @@ public class DPDTest {
                 row = sheet.createRow(r);
 
                 Map<String, String> alexMap = new HashMap<>();
-                parseAddressFromString(alexMap, cra);
-//                parseAddresForDPD(alexMap, cra);
+//                parseAddressFromString(alexMap, cra);
+                parseAddresForDPD(alexMap, cra);
 
                 CellStyle style = wb.createCellStyle();
                 Short index = 1;
