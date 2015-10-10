@@ -44,7 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
  */
 public class DPDTest {
 
-    private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*((\\d)+(/\\d)*[а-я]?))";
+    private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*((\\d)+(/)?(\\d)*[а-я]?))";
     private final String HOUSE_CASE_FLAT_REGEX = "([\\d]+(/\\d+)?(-)[\\d]+(-[\\d]+)?)";
     private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*((\\d)+))";
     private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*((\\d)+))";
@@ -377,55 +377,15 @@ public class DPDTest {
         else {
             // если есть квартира
             if (hasFlatString(rawStreetString)) {
-                splitStringByRegex(addressMap, rawStreetString, FLAT_REGEX);
-                strMap.put("street", addressMap.get("before"));
-                String afterString = addressMap.get("after");
-
-                // выцепляем квартиру, остальное все что справа - мусор
-                Pattern p = Pattern.compile(FLAT_REGEX);
-                Matcher m = p.matcher(afterString);
-                String flatNum = "";
-                if (m.find()) {
-                    flatNum = m.group(5);
-                }
-                strMap.put("flat", flatNum); // TODO: проверить
-                rawStreetString = addressMap.get("before");
-                strMap.put("style", "22");
+                cutAddressPart(addressMap, strMap, rawStreetString, "flat", FLAT_REGEX, "22");
             }
             // если есть корпус
             if (hasHouseCaseString(rawStreetString)) {
-                splitStringByRegex(addressMap, rawStreetString, HOUSECASE_REGEX);
-                strMap.put("street", addressMap.get("before"));
-                String afterString = addressMap.get("after");
-
-                // выцепляем корпус, остальное все что справа - мусор
-                Pattern p = Pattern.compile(HOUSECASE_REGEX);
-                Matcher m = p.matcher(afterString);
-                String houseCase = "";
-                if (m.find()) {
-                    houseCase = m.group(5);
-                }
-                strMap.put("houseCase", houseCase);  // TODO: проверить
-                rawStreetString = addressMap.get("before");
-                strMap.put("style", "22");
+                cutAddressPart(addressMap, strMap, rawStreetString, "houseCase", HOUSECASE_REGEX, "22");
             }
             // если есть дом
             if (hasHouseString(rawStreetString)) {
-                splitStringByRegex(addressMap, rawStreetString, HOUSE_REGEX);
-                strMap.put("street", addressMap.get("before"));
-                String afterString = addressMap.get("after");
-
-                // выцепляем дом, остальное все что справа - мусор
-                Pattern p = Pattern.compile(HOUSE_REGEX);
-                Matcher m = p.matcher(afterString);
-                String houseNum = "";
-                if (m.find()) {
-                    houseNum = m.group(5);
-                }
-
-                strMap.put("house", houseNum);  // TODO: проверить
-                rawStreetString = addressMap.get("before");
-                strMap.put("style", "22");
+                cutAddressPart(addressMap, strMap, rawStreetString, "house", HOUSE_REGEX, "22");
             } else { // если слово дом не нашли, пробуем найти просто по дроби
 
                 strMap.put("street", rawStreetString);
@@ -434,6 +394,30 @@ public class DPDTest {
 
         }
 
+    }
+    
+    /* режет строку с адресом на 2 части, первую часть запихивает в улицу, 
+        а вторую часть запихивает в соответствующее поле
+    
+    addressMap, возможно, не понадобится в дальнейшем
+    */
+    public void cutAddressPart(Map<String, String> addressMap, Map<String, String> strMap, String rawStreetString, String nameOfFieldToCut, String regexString, String style){
+                splitStringByRegex(addressMap, rawStreetString, regexString);
+                strMap.put("street", addressMap.get("before"));
+                String afterString = addressMap.get("after");
+
+                // выцепляем кусок адреса, остальное все что справа - мусор
+                Pattern p = Pattern.compile(regexString);
+                Matcher m = p.matcher(afterString);
+                String adressPartNum = "";
+                if (m.find()) {
+                    adressPartNum = m.group(5);
+                }
+
+                strMap.put(nameOfFieldToCut, adressPartNum);  // TODO: проверить
+                rawStreetString = addressMap.get("before");
+                strMap.put("style", style);
+        
     }
 
     public void parseAddresForDPD1(Address dpdAddress, String rawStreetString) {
