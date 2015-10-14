@@ -50,6 +50,8 @@ public class DPDTest {
     private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*(?<flat>(\\d)+))";
     private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*(?<houseCase>(\\d)+))";
     private final String HOUSE_LAST_HOPE_REGEX = "(?<house>[\\d]+[, ]*)$";
+    private final String STRING_BAD_END_REGEX = "([;, ]+)$";
+    private final String WORD_REGEX = "[А-Яа-я]{3,}";
 
     Boolean hasMatching(String requestString, String regex) {
         Pattern p = Pattern.compile(regex.toLowerCase());
@@ -336,10 +338,7 @@ public class DPDTest {
 
     public void parseAddresForDPD(Map<String, String> strMap, ClientRetailAddress clientRetailAddress) {
 
-        Map<String, List<String>> streetAbbrMap = makeStreetAbbrMap();
-
         String rawStreetString = clientRetailAddress.getClientRetailAddressStreet();
-        
         Boolean hasFlat = false;
 
         // если в улице есть шаблон вида дом(-корпус)-квартира
@@ -395,6 +394,7 @@ public class DPDTest {
                 }
             }
             
+            rawStreetString = cutBadEnd(rawStreetString);
             strMap.put("street", rawStreetString);
             
         }
@@ -402,10 +402,80 @@ public class DPDTest {
             Закончили вытаскивать дома-квартиры, 
             теперь будем смотреть регион, город, тип улицы и название улицы
         */
+        Map<String, List<String>> streetAbbrMap = makeStreetAbbrMap();
         
+        /*
+            сначала строку по запятым.
+        */
         
+        String[] splittedStreet = rawStreetString.split(",");
+        List<String> splittedStreetList = new ArrayList<String>(Arrays.asList(splittedStreet));
+        /*  
+            последний токен - скорее всего улица
+            если нет ни одного нормального слова, то это не улица, а мусор. 
+            выкидываем этот токен и смотрим последний оставшийся и тд
+            
+        */
         
+        Boolean endOfSearch = false;
+        while(!endOfSearch){
+            if(splittedStreetList.size() <= 1){
+                endOfSearch = true;
+            }
+            String streetTry = splittedStreetList.remove(splittedStreetList.size()-1);
+            Pattern p  = Pattern.compile(WORD_REGEX);
+            Matcher m = p.matcher(streetTry);
+            if(!m.find()){
+                continue;
+            }else{
+                rawStreetString = streetTry;
 
+//                for (Map.Entry<String, List<String>> entry : streetAbbrMap.entrySet()) {
+//                    for (String abbr : entry.getValue()) {
+//                        Pattern sabp = Pattern.compile(abbr);
+//                        Matcher sabm = sabp.matcher(rawStreetString);
+//                        if (sabm.find()) {
+//                            
+//                        }
+//                    }
+//                }
+                
+                /* 
+                 строку с улицей бьем на токены (может быть, точки-запятые предварительно заменяем на пробелы)
+                 */
+                String[] streetTokensArrStat = rawStreetString.split(" ");
+                ArrayList<String> streetTokensList = new ArrayList<String>(Arrays.asList(streetTokensArrStat));
+                
+
+                // находим тип улицы
+                for (String token : streetTokensArrStat) {
+                    if(token.equals("")){
+                        streetTokensList.remove(token);
+                        continue;
+                    }
+                    String tokenToCompare = token.replaceAll("[\\.]", "").toLowerCase();
+//                    String tokenToCompare = token.toLowerCase();
+                    for (Map.Entry<String, List<String>> entry : streetAbbrMap.entrySet()) {
+                        if (entry.getValue().contains(tokenToCompare)) {
+                            strMap.put("streetAbbr", entry.getKey());
+                            streetTokensList.remove(token);
+
+                        }
+                    }
+                }
+
+                // собираем строку с улицей обратно
+                StringBuilder buildedStreet = new StringBuilder();
+                for (String token : streetTokensList) {
+                    buildedStreet.append(token).append(" ");
+                }
+                
+                rawStreetString = buildedStreet.toString().trim();
+                strMap.put("street", rawStreetString);
+                endOfSearch = true;
+            }
+            
+        }
     }
     
     
@@ -551,14 +621,18 @@ public class DPDTest {
 
         Sheet sheet = wb.createSheet("streetsAlex");
         Sheet sheet2 = wb.createSheet("streetsDimk");
+        Sheet sheet3 = wb.createSheet("colors");
         Row row;
         Row row2;
+        Row row3;
+        
 //            Iterator sheetIterator = sheet.iterator();
         Iterator listIterator = lines.iterator();
         Integer r = 0;
         while (listIterator.hasNext()) {
             try {
 
+                CellStyle style = wb.createCellStyle();
                 ClientRetailAddress cra = new ClientRetailAddress();
 
                 String[] currentAddress = (String[]) listIterator.next();
@@ -575,7 +649,6 @@ public class DPDTest {
 //                parseAddressFromString(alexMap, cra);
                 parseAddresForDPD(alexMap, cra);
 
-                CellStyle style = wb.createCellStyle();
                 Short index = 1;
                 if (alexMap.get("style") != null && alexMap.get("style") != "") {
                     index = Short.parseShort(alexMap.get("style"));
@@ -586,18 +659,35 @@ public class DPDTest {
                 setCellString(row, 2, alexMap.get("house"), style, index);
                 setCellString(row, 3, alexMap.get("houseCase"), style, index);
                 setCellString(row, 4, alexMap.get("flat"), style, index);
+                setCellString(row, 5, alexMap.get("streetAbbr"), style, index);
 
                 row2 = sheet2.createRow(r);
                 Cell streetCell2 = row2.createCell(0);
                 streetCell2.setCellType(Cell.CELL_TYPE_STRING);
                 streetCell2.setCellValue(currentAddress[1]);
-
+                
                 r += 1;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        for (IndexedColors color : IndexedColors.values()) {
+            row3 = sheet3.createRow(color.getIndex());
+            Cell colorName = row3.createCell(0);
+            colorName.setCellType(Cell.CELL_TYPE_STRING);
+            colorName.setCellValue(color.name());
+
+            Cell colorVal = row3.createCell(1);
+            colorVal.setCellType(Cell.CELL_TYPE_STRING);
+            CellStyle s = wb.createCellStyle();
+            s.setFillForegroundColor(color.getIndex());
+            s.setFillPattern(CellStyle.FINE_DOTS);
+            colorVal.setCellStyle(s);
+            colorVal.setCellValue(color.getIndex());
+        }
+
+        
         try {
             FileOutputStream fileOut = new FileOutputStream("workbook.xlsx");
             wb.write(fileOut);
@@ -771,4 +861,15 @@ public class DPDTest {
 //        return result;
     }
 
+    public String cutBadEnd(String rawStreetString){
+        
+        Pattern p = Pattern.compile(STRING_BAD_END_REGEX);
+        Matcher m = p.matcher(rawStreetString);
+        if(m.find()){
+            Integer index = m.start();
+            rawStreetString = rawStreetString.substring(0, index);
+        }
+        
+        return rawStreetString;
+    }
 }
