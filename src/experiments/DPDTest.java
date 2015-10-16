@@ -499,7 +499,7 @@ public class DPDTest {
         Matcher m = p.matcher(afterString);
         String adressPartNum = "";
         if (m.find()) {
-//            adressPartNum = m.group(nameOfFieldToCut);
+//            adressPartNum = m.group(nameOfFieldToCut); // можно включить при java 7+
             adressPartNum = m.group(5);
         }
 
