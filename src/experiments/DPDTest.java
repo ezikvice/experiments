@@ -44,12 +44,22 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
  */
 public class DPDTest {
 
-    private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*(?<house>(\\d)+(/)?(\\d)*[а-я]?))";
-    private final String HOUSE_SPLASH_REGEX = "(?<house>(\\d)+(/)+(\\d)+[а-я]?)"; // TODO: нужно ли для дробного дома несколько слешей? 
+//    private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*(?<house>(\\d)+(/)?(\\d)*[а-я]?))";
+//    private final String HOUSE_SPLASH_REGEX = "(?<house>(\\d)+(/)+(\\d)+[а-я]?)"; // TODO: нужно ли для дробного дома несколько слешей? 
+//    private final String HOUSE_CASE_FLAT_REGEX = "([\\d]+(/\\d+)?(-)[\\d]+(-[\\d]+)?)";
+//    private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*(?<flat>(\\d)+))";
+//    private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*(?<houseCase>(\\d)+))";
+//    private final String HOUSE_LAST_HOPE_REGEX = "(?<house>[\\d]+[, ]*)$";
+//    private final String STRING_BAD_END_REGEX = "([;, ]+)$";
+//    private final String WORD_REGEX = "[А-Яа-я]{3,}";
+//    private final String UNSPACED_STREET_REGEX = "(ул.)";
+
+    private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*((\\d)+(/)?(\\d)*[а-я]?))";
+    private final String HOUSE_SPLASH_REGEX = "((((((\\d)+(/)+(\\d)+[а-я]?)))))"; // TODO: нужно ли для дробного дома несколько слешей? 
     private final String HOUSE_CASE_FLAT_REGEX = "([\\d]+(/\\d+)?(-)[\\d]+(-[\\d]+)?)";
-    private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*(?<flat>(\\d)+))";
-    private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*(?<houseCase>(\\d)+))";
-    private final String HOUSE_LAST_HOPE_REGEX = "(?<house>[\\d]+[, ]*)$";
+    private final String FLAT_REGEX = "((кв|квартира)(\\.)?( )*((\\d)+))";
+    private final String HOUSECASE_REGEX = "([0-9 ,](к|кор|корп|корпус)(\\.)*( )*((\\d)+))";
+    private final String HOUSE_LAST_HOPE_REGEX = "((((([\\d]+[, ]*)))))$";
     private final String STRING_BAD_END_REGEX = "([;, ]+)$";
     private final String WORD_REGEX = "[А-Яа-я]{3,}";
 
@@ -430,16 +440,6 @@ public class DPDTest {
             }else{
                 rawStreetString = streetTry;
 
-//                for (Map.Entry<String, List<String>> entry : streetAbbrMap.entrySet()) {
-//                    for (String abbr : entry.getValue()) {
-//                        Pattern sabp = Pattern.compile(abbr);
-//                        Matcher sabm = sabp.matcher(rawStreetString);
-//                        if (sabm.find()) {
-//                            
-//                        }
-//                    }
-//                }
-                
                 /* 
                  строку с улицей бьем на токены (может быть, точки-запятые предварительно заменяем на пробелы)
                  */
@@ -453,14 +453,17 @@ public class DPDTest {
                         streetTokensList.remove(token);
                         continue;
                     }
-                    String tokenToCompare = token.replaceAll("[\\.]", "").toLowerCase();
+                    String tokenToCompare = token.replaceAll("((\\.)+)$", "").toLowerCase();
 //                    String tokenToCompare = token.toLowerCase();
                     for (Map.Entry<String, List<String>> entry : streetAbbrMap.entrySet()) {
                         if (entry.getValue().contains(tokenToCompare)) {
                             strMap.put("streetAbbr", entry.getKey());
                             streetTokensList.remove(token);
-
+//                        }else if(){
+                        
                         }
+                        
+                        
                     }
                 }
 
@@ -496,7 +499,8 @@ public class DPDTest {
         Matcher m = p.matcher(afterString);
         String adressPartNum = "";
         if (m.find()) {
-            adressPartNum = m.group(nameOfFieldToCut);
+//            adressPartNum = m.group(nameOfFieldToCut);
+            adressPartNum = m.group(5);
         }
 
         strMap.put(nameOfFieldToCut, adressPartNum);  // TODO: проверить
