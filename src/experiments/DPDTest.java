@@ -44,6 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
  */
 public class DPDTest {
 
+// TODO: активировать эти регекспы с именами групп при переходе на java7+
 //    private final String HOUSE_REGEX = "([^а-я](д|дом)(\\.)*( )*(?<house>(\\d)+(/)?(\\d)*[а-я]?))";
 //    private final String HOUSE_SPLASH_REGEX = "(?<house>(\\d)+(/)+(\\d)+[а-я]?)"; // TODO: нужно ли для дробного дома несколько слешей? 
 //    private final String HOUSE_CASE_FLAT_REGEX = "([\\d]+(/\\d+)?(-)[\\d]+(-[\\d]+)?)";
@@ -714,6 +715,8 @@ public class DPDTest {
         cell.setCellStyle(style);
         cell.setCellValue(value);
     }
+
+
 //    public List<DpdOrderStatus> getOrderStatus(DPDOrder service, String invoiceId) {
 //        try {
 //            final List<DpdOrderStatus> orderStatusList = service.createOrder(ordersData);
