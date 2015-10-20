@@ -879,4 +879,76 @@ public class DPDTest {
         
         return rawStreetString;
     }
+    
+    
+    
+    
+    
+    
+    Map<String, Object> createDPDAddress(ClientRetailAddress address)  {
+        
+        Map<String, String> addrMap = new HashMap<>();
+        
+        parseAddresForDPD(addrMap, address);
+        
+        
+
+        DpdClientAddress clientAddr = new DpdClientAddress();
+
+//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
+//        DPDConfig dpdConfig = dpdConfigList.get(0);
+
+        Auth auth = new Auth();
+//        auth.setClientKey(dpdConfig.getDpdClientKey());
+//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        auth.setClientNumber(1002017631);
+
+        clientAddr.setAuth(auth);
+
+
+        ClientAddress senderAddr = new ClientAddress();
+
+        senderAddr.setCode(address.getClientRetailAddressId().toString());
+    //        senderAddr.setName("ООО Ин-Ритейл");
+    //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
+        senderAddr.setCountryName("Россия");
+//        senderAddr.setIndex("194294");
+        senderAddr.setRegion("Санкт-Петербург");
+        senderAddr.setCity(address.getClientRetailAddressCity());
+        senderAddr.setStreet("Железнодорожная");
+        senderAddr.setStreetAbbr("ул");
+        senderAddr.setHouse("11");
+        senderAddr.setHouseKorpus("3");
+        senderAddr.setFlat("34");
+        senderAddr.setContactFio("Иванов Андрей Вячеславович");
+        senderAddr.setContactPhone("89052833938");
+    //        senderAddr.setContactEmail("test@test.com");
+    //        senderAddr.setInstructions("подъезд со стороны двора");
+        clientAddr.setClientAddress(senderAddr);
+
+        Map<String, Object> modelMap = new HashMap<String, Object>(2);
+
+        try { // Call Web Service Operation
+            DPDOrderService service = new DPDOrderService();
+            DPDOrder port = service.getDPDOrderPort();
+            // TODO initialize WS operation arguments here
+            // 
+            DpdClientAddressStatus result = port.createAddress(clientAddr);
+
+            modelMap.put("result", result);
+
+            System.out.println("Result = "+result);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // TODO handle custom exceptions here
+        }
+
+
+
+        return modelMap;
+    }
+    
+    
+    
 }
