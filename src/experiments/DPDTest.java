@@ -903,29 +903,30 @@ public class DPDTest {
 //        auth.setClientNumber(dpdConfig.getDpdClientNumber());
         auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
         auth.setClientNumber(1002017631);
-
         clientAddr.setAuth(auth);
 
+        ClientAddress dpdAddress = new ClientAddress();
 
-        ClientAddress senderAddr = new ClientAddress();
-
-        senderAddr.setCode(address.getClientRetailAddressId().toString());
+        dpdAddress.setCode(address.getClientRetailAddressId().toString());
     //        senderAddr.setName("ООО Ин-Ритейл");
     //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
-        senderAddr.setCountryName("Россия");
+        dpdAddress.setCountryName("Россия");
 //        senderAddr.setIndex("194294");
-        senderAddr.setRegion("Санкт-Петербург");
-        senderAddr.setCity(address.getClientRetailAddressCity());
-        senderAddr.setStreet("Железнодорожная");
-        senderAddr.setStreetAbbr("ул");
-        senderAddr.setHouse("11");
-        senderAddr.setHouseKorpus("3");
-        senderAddr.setFlat("34");
-        senderAddr.setContactFio("Иванов Андрей Вячеславович");
-        senderAddr.setContactPhone("89052833938");
+//        dpdAddress.setRegion("Санкт-Петербург");
+        dpdAddress.setCity(address.getClientRetailAddressCity());
+        dpdAddress.setStreet(addrMap.get("street"));
+        dpdAddress.setStreetAbbr(addrMap.get("streetAbbr"));
+        dpdAddress.setHouse(address.getClientRetailAddressHouseNumber());
+        dpdAddress.setHouseKorpus(address.getClientRetailAddressHouseCase());
+        dpdAddress.setFlat(address.getClientRetailAddressApartment());
+        dpdAddress.setContactFio("Иванов Андрей Вячеславович");
+        dpdAddress.setContactPhone("89052833938");
     //        senderAddr.setContactEmail("test@test.com");
     //        senderAddr.setInstructions("подъезд со стороны двора");
-        clientAddr.setClientAddress(senderAddr);
+
+        
+        
+        clientAddr.setClientAddress(dpdAddress);
 
         Map<String, Object> modelMap = new HashMap<String, Object>(2);
 

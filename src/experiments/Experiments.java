@@ -31,7 +31,17 @@ public class Experiments {
     public static void main(String[] args) {
         
         DPDTest t = new DPDTest();
-        t.makeExcelFromAdressList();
+        ClientRetailAddress cra = new ClientRetailAddress();
+        cra.setClientRetailAddressCity("Воронеж");
+        cra.setClientRetailAddressId(1);
+        cra.setClientRetailAddressStreet("Улица 9 января");
+        cra.setClientRetailAddressHouseNumber("300 Б");
+        cra.setClientRetailAddressApartment("88");
+        
+        Map<String, Object> status = t.createDPDAddress(cra);
+        
+        System.out.println(status.get("result"));
+//        t.makeExcelFromAdressList();
         
 //        String a = "2014.12.31";
 //        String[] b = a.split("\\.");
