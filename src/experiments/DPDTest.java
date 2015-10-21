@@ -7,7 +7,6 @@ package experiments;
 
 import com.opencsv.CSVReader;
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
-import experiments.CreateOrder;
 import experiments.DpdOrdersData;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,23 +19,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
-import java.io.OutputStream;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 /**
  *
@@ -511,88 +504,6 @@ public class DPDTest {
 
     }
 
-    public void parseAddresForDPD1(Address dpdAddress, String rawStreetString) {
-
-        Map<String, List<String>> streetAbbrMap = makeStreetAbbrMap();
-
-        /* 
-         строку с улицей бьем на токены (может быть, точки-запятые предварительно заменяем на пробелы)
-         */
-        String[] streetTokensArrStat = rawStreetString.split(" ");
-        ArrayList<String> streetTokensList = new ArrayList<String>(Arrays.asList(streetTokensArrStat));
-
-        // находим тип улицы
-        for (String token : streetTokensArrStat) {
-            String tokenToCompare = token.replaceAll("[\\.,]", "");
-            for (Map.Entry<String, List<String>> entry : streetAbbrMap.entrySet()) {
-                if (entry.getValue().contains(tokenToCompare)) {
-                    dpdAddress.setStreetAbbr(entry.getKey());
-                    streetTokensList.remove(token);
-
-                }
-            }
-        }
-
-        // собираем строку с улицей обратно
-        StringBuilder buildedStreet = new StringBuilder();
-        for (String token : streetTokensList) {
-            buildedStreet.append(token).append(" ");
-        }
-
-        // ищем дома-квартиры-корпуса
-        // дома
-        Pattern housePattern = Pattern.compile(HOUSE_REGEX);
-        Matcher m = housePattern.matcher(buildedStreet);
-        String houseString;
-        String allHouseString;
-        if (m.find()) {
-            houseString = m.group(1);
-            Integer startIndex = m.start(1);
-            allHouseString = buildedStreet.substring(startIndex);
-
-            Pattern houseNumPattern = Pattern.compile("([\\d]+)");
-            Matcher mn = houseNumPattern.matcher(houseString);
-            String houseNumString = "";
-
-            if (mn.find()) {
-                houseNumString = mn.group(1);
-            }
-
-            if (dpdAddress.getHouse() == null || "".equals(dpdAddress.getHouse())) {
-                dpdAddress.setHouse(houseNumString);
-            }
-            buildedStreet = new StringBuilder(m.replaceAll(""));
-            System.out.println(buildedStreet);
-        }
-
-        // квартиры
-        Pattern flatPattern = Pattern.compile(FLAT_REGEX);
-        Matcher flatMatcher = flatPattern.matcher(buildedStreet);
-        String flatString;
-        if (flatMatcher.find()) {
-            flatString = flatMatcher.group(1);
-            Integer startIndex = flatMatcher.start(1);
-            Pattern flatNumPattern = Pattern.compile("([\\d]+)");
-            Matcher flatNumberMatcher = flatNumPattern.matcher(flatString);
-            String flatNumString = "";
-
-            if (flatNumberMatcher.find()) {
-                flatNumString = flatNumberMatcher.group(1);
-            }
-
-            if (dpdAddress.getFlat() == null || "".equals(dpdAddress.getFlat())) {
-                dpdAddress.setFlat(flatNumString);
-            }
-            buildedStreet = new StringBuilder(flatMatcher.replaceAll(""));
-            System.out.println(buildedStreet);
-        }
-
-        dpdAddress.setStreet(buildedStreet.toString().replaceAll("[,]", "").trim());
-
-//        return dpdAddress;
-        return;
-    }
-
     public void makeExcelFromAdressList() {
 
         //открываем файл
@@ -715,19 +626,6 @@ public class DPDTest {
         cell.setCellStyle(style);
         cell.setCellValue(value);
     }
-
-
-//    public List<DpdOrderStatus> getOrderStatus(DPDOrder service, String invoiceId) {
-//        try {
-//            final List<DpdOrderStatus> orderStatusList = service.createOrder(ordersData);
-//            return orderStatusList;
-//        } catch (WSFault_Exception e) {
-//            System.err.println("WSFault: " + e.getFaultInfo().getCode() + " / " + e.getFaultInfo().getMessage());
-//        } catch (Throwable e) {
-//            System.err.println("Fatal error: " + e);
-//        }
-//        return null;
-//    }
 
     public static void parseAddressFromString(Map<String, String> strMap, ClientRetailAddress addresses) {
         String result = "";
@@ -883,32 +781,37 @@ public class DPDTest {
     
     
     
+    Auth fillAuthInfo(){
+        Auth auth = new Auth();
+        
+//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
+//        DPDConfig dpdConfig = dpdConfigList.get(0);
+//        auth.setClientKey(dpdConfig.getDpdClientKey());
+//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
+        
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        auth.setClientNumber(1002017631);
+        
+        return auth;
+    }
     
     
-    Map<String, Object> createDPDAddress(ClientRetailAddress address)  {
+    
+    DpdClientAddressStatus createDPDAddress(ClientRetailAddress address)  {
         
         Map<String, String> addrMap = new HashMap<>();
         
         parseAddresForDPD(addrMap, address);
         
-        
-
         DpdClientAddress clientAddr = new DpdClientAddress();
 
-//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
-//        DPDConfig dpdConfig = dpdConfigList.get(0);
-
-        Auth auth = new Auth();
-//        auth.setClientKey(dpdConfig.getDpdClientKey());
-//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
-        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
-        auth.setClientNumber(1002017631);
+        Auth auth = fillAuthInfo();
         clientAddr.setAuth(auth);
 
         ClientAddress dpdAddress = new ClientAddress();
 
         dpdAddress.setCode(address.getClientRetailAddressId().toString());
-    //        senderAddr.setName("ООО Ин-Ритейл");
+        dpdAddress.setName("ООО Ин-Ритейл");
     //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
         dpdAddress.setCountryName("Россия");
 //        senderAddr.setIndex("194294");
@@ -928,16 +831,90 @@ public class DPDTest {
         
         clientAddr.setClientAddress(dpdAddress);
 
-        Map<String, Object> modelMap = new HashMap<String, Object>(2);
-
+        DpdClientAddressStatus result = new DpdClientAddressStatus();
+        
         try { // Call Web Service Operation
             DPDOrderService service = new DPDOrderService();
             DPDOrder port = service.getDPDOrderPort();
             // TODO initialize WS operation arguments here
             // 
-            DpdClientAddressStatus result = port.createAddress(clientAddr);
+            result = port.createAddress(clientAddr);
 
-            modelMap.put("result", result);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // TODO handle custom exceptions here
+        }
+
+        return result;
+
+    }
+    
+    DpdClientAddress fillDPDAddress(ClientRetailAddress clientRetailAddress){
+        DpdClientAddress clientAddr = new DpdClientAddress();
+        
+//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
+//        DPDConfig dpdConfig = dpdConfigList.get(0);
+
+        Auth auth = new Auth();
+//        auth.setClientKey(dpdConfig.getDpdClientKey());
+//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        auth.setClientNumber(1002017631);
+        clientAddr.setAuth(auth);
+
+        
+        
+        return clientAddr;
+    }
+    
+    
+    DpdClientAddressStatus updateDPDAddress(ClientRetailAddress address)  {
+        
+        DpdClientAddress clientAddr = new DpdClientAddress();
+
+//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
+//        DPDConfig dpdConfig = dpdConfigList.get(0);
+
+        Auth auth = new Auth();
+//        auth.setClientKey(dpdConfig.getDpdClientKey());
+//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        auth.setClientNumber(1002017631);
+        clientAddr.setAuth(auth);
+
+        
+        Map<String, String> addrMap = new HashMap<>();
+        parseAddresForDPD(addrMap, address);
+        
+        ClientAddress dpdAddress = new ClientAddress();
+
+        dpdAddress.setCode(address.getClientRetailAddressId().toString());
+        dpdAddress.setName("ООО Ин-Ритейл");
+    //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
+        dpdAddress.setCountryName("Россия");
+//        senderAddr.setIndex("194294");
+//        dpdAddress.setRegion("Санкт-Петербург");
+        dpdAddress.setCity(address.getClientRetailAddressCity());
+        dpdAddress.setStreet(addrMap.get("street"));
+        dpdAddress.setStreetAbbr(addrMap.get("streetAbbr"));
+        dpdAddress.setHouse(address.getClientRetailAddressHouseNumber());
+        dpdAddress.setHouseKorpus(address.getClientRetailAddressHouseCase());
+        dpdAddress.setFlat(address.getClientRetailAddressApartment());
+        dpdAddress.setContactFio("Иванов Андрей Вячеславович");
+        dpdAddress.setContactPhone("89052833938");
+    //        senderAddr.setContactEmail("test@test.com");
+    //        senderAddr.setInstructions("подъезд со стороны двора");
+        
+        clientAddr.setClientAddress(dpdAddress);
+
+        DpdClientAddressStatus result = new DpdClientAddressStatus();
+        
+        try { // Call Web Service Operation
+            DPDOrderService service = new DPDOrderService();
+            DPDOrder port = service.getDPDOrderPort();
+            // TODO initialize WS operation arguments here
+            // 
+            result = port.updateAddress(clientAddr);
 
             System.out.println("Result = "+result);
         } catch (Exception ex) {
@@ -945,9 +922,7 @@ public class DPDTest {
             // TODO handle custom exceptions here
         }
 
-
-
-        return modelMap;
+        return result;
     }
     
     

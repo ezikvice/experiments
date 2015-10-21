@@ -32,74 +32,34 @@ public class Experiments {
         
         DPDTest t = new DPDTest();
         ClientRetailAddress cra = new ClientRetailAddress();
-        cra.setClientRetailAddressCity("Воронеж");
+        cra.setClientRetailAddressCity("Астрахань");
         cra.setClientRetailAddressId(1);
-        cra.setClientRetailAddressStreet("Улица 9 января");
-        cra.setClientRetailAddressHouseNumber("300 Б");
-        cra.setClientRetailAddressApartment("88");
+        cra.setClientRetailAddressStreet("Улица Каменноярская");
+        cra.setClientRetailAddressHouseNumber("33");
+        cra.setClientRetailAddressApartment("1");
         
-        Map<String, Object> status = t.createDPDAddress(cra);
+        DpdClientAddressStatus dpdStatus = t.createDPDAddress(cra);
         
-        System.out.println(status.get("result"));
+        System.out.println("createAddress");
+        System.out.println("---------------");
+        System.out.println("address status:");
+        System.out.println("code: " + dpdStatus.getCode());
+        System.out.println("status: " + dpdStatus.getStatus());
+        System.out.println("errorMessage: " + dpdStatus.getErrorMessage());
+        System.out.println("---------------");
+        
+        if(dpdStatus.getCode().equals("1")){
+            dpdStatus = t.updateDPDAddress(cra);
+            System.out.println("updateAddress");
+            System.out.println("address status:");
+            System.out.println("code: " + dpdStatus.getCode());
+            System.out.println("status: " + dpdStatus.getStatus());
+            System.out.println("errorMessage: " + dpdStatus.getErrorMessage());
+            System.out.println("---------------");            
+        }
 //        t.makeExcelFromAdressList();
         
-//        String a = "2014.12.31";
-//        String[] b = a.split("\\.");
-//        System.out.println(b[0]);
         
     }
-    
-
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main2(String[] args) {
-        // TODO code application logic here
-//        Cat myCat= new Cat();
-//        Animal myAnimal = myCat;
-//        myCat.sayA();
-//        myAnimal.say();
-        List<Map<String,Object>> a = new ArrayList<Map<String,Object>>();
-//        String c = null;
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("1",null);
-        a.add(null);
-        a.add(map);
-        
-//        for (Map a1 : a) {
-//            if(a1!=null && !a1.equals("") && !a1.equals("sdfs")){
-//                System.out.println(a1);
-//            }
-//        }
-        
-        MathContext mc = new MathContext(2, RoundingMode.HALF_UP);
-        
-        BigDecimal axz = new BigDecimal(0, MathContext.DECIMAL64);
-        BigDecimal b = new BigDecimal(131161.2, MathContext.DECIMAL64);
-        BigDecimal c = new BigDecimal(51, MathContext.DECIMAL64);
-                
-        axz = b.divide(c, 4, RoundingMode.HALF_UP);
-//        BigDecimal axze = new BigDecimal(1).multiply(new BigDecimal(12334));
-        System.out.println(axz);
-//        System.out.println(a.get(0).equals(null));
-        System.out.println(Math.abs(-1));
-        
-//        Integer i = 1025;
-//        double asd = (double)i/30;
-//        System.out.println(Integer.MAX_VALUE);
-        
-        
-        BigDecimal bd = new BigDecimal(100);
-        
-        
-        boolean cond = true;
- int i = 0;
-System.out.print(cond ? 'X' : 0);
-System.out.print(cond ? 'X' : i);
-  
-
-    }
-    
+       
 }
