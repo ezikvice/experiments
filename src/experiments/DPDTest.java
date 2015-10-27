@@ -927,4 +927,30 @@ public class DPDTest {
     
     
     
+    ClientAddress fillDPDAddressFromInvoice(Invoice invoice){
+        ClientAddress dpdAddress = new ClientAddress();
+        ClientRetailAddress cra = invoice.getClientRetailAddress();
+        InvoiceRecipient recipient = invoice.getInvoiceRecipient();
+        
+        dpdAddress.setCode(cra.getClientRetailAddressId().toString());
+        
+        dpdAddress.setRegion(cra.getClientRetailAddressRegion());
+        dpdAddress.setCity(cra.getClientRetailAddressCity());
+        dpdAddress.setStreet(cra.getClientRetailAddressStreet());
+        dpdAddress.setHouse(cra.getClientRetailAddressHouseNumber());
+        dpdAddress.setHouseKorpus(cra.getClientRetailAddressHouseCase());
+        dpdAddress.setFlat(cra.getClientRetailAddressApartment());
+        
+        dpdAddress.setContactFio(recipient.getRecipientName());
+        dpdAddress.setContactEmail(recipient.getRecipientEmail());
+        dpdAddress.setContactPhone(recipient.getRecipientPhone());
+        
+        dpdAddress.setInstructions(invoice.getInvoiceComment());
+    
+        return dpdAddress;
+    }
+    
+    
+    
+    
 }

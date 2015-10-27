@@ -4,6 +4,7 @@ public class ClientRetailAddress {
 
     private Integer clientRetailAddressId;
     private Integer clientRetailId;
+    private String clientRetailAddressRegion;
     private String clientRetailAddressCity;
     private String clientRetailAddressZipCode;
     private String clientRetailAddressStreet;
@@ -30,6 +31,15 @@ public class ClientRetailAddress {
                 + (clientRetailAddressComment == null ? "" : " " + clientRetailAddressComment);
     }
 
+    public String getClientRetailAddressRegion() {
+        return clientRetailAddressRegion;
+    }
+
+    public void setClientRetailAddressRegion(String clientRetailAddressRegion) {
+        this.clientRetailAddressRegion = clientRetailAddressRegion;
+    }
+
+    
     public String getClientRetailAddressCity() {
         return clientRetailAddressCity;
     }

@@ -22,17 +22,6 @@ public class Invoice {
     private Integer invoiceIsReserved;
     private Integer invoiceTypeId;
     private Integer paymentTypeId;
-    private Integer clientWholesaleAddressId;
-    private String clientWholesaleAddressHouseCase;
-    private String clientWholesaleAddressZipCode;
-    private String clientWholesaleAddressCity;
-    private String clientWholesaleAgreementNumber;
-    private String clientWholesaleAddressStreet;
-    private String clientWholesaleAddressHouseNumber;
-    private String clientWholesaleAddressApartment;
-    private String clientWholesaleAddressComment;
-    private String clientWholesaleName;
-    private String clientWholesalePaymentDelay;
     private Integer invoiceDeliveryTCId;
     private Integer transportCompanyId;
     private Integer invoiceSelfDeliveryId;
@@ -90,14 +79,12 @@ public class Invoice {
     private String clientRetailFirstName;
     private String clientRetailMiddleName;
     private String clientRetailLastName;
-    private Integer clientWholesaleIsBlock;
     private String clientName;
 
     private BigDecimal totalPrice;
 
     private ClientRetailAddress clientRetailAddress;
 
-    private ClientRetail clientRetail;
     
     private Boolean invoiceRetailIsFirstShipping;
     private Integer shippingNumber;
@@ -107,23 +94,6 @@ public class Invoice {
     public Invoice() {
 
     }
-
-    public Invoice(Map<String, Object> objectMap) throws IllegalArgumentException, IllegalAccessException {
-        initObject(objectMap);
-    }
-
-    protected void initObject(Map<String, Object> objectMap) throws IllegalArgumentException, IllegalAccessException {
-        List<Field> fields = Util.getAllFields(new LinkedList<Field>(), this.getClass());
-        for (Field field : fields) {
-            for (String key : objectMap.keySet()) {
-                if (field.getName().equals(key)) {
-                    field.set(this, Util.parseValue(field.getType(), objectMap.get(key)));
-                }
-            }
-        }
-    }
-
-
 
     public String getClientAddressFull() {
         return clientAddressFull;
@@ -147,22 +117,6 @@ public class Invoice {
 
     public void setTransportCompanyId(Integer transportCompanyId) {
         this.transportCompanyId = transportCompanyId;
-    }
-
-    public Integer getInvoiceCheckSite() {
-        return invoiceCheckSite;
-    }
-
-    public void setInvoiceCheckSite(Integer invoiceCheckSite) {
-        this.invoiceCheckSite = invoiceCheckSite;
-    }
-
-    public String getMeanTypeName() {
-        return meanTypeName;
-    }
-
-    public void setMeanTypeName(String meanTypeName) {
-        this.meanTypeName = meanTypeName;
     }
 
     public String getSiteBanner() {
@@ -189,14 +143,6 @@ public class Invoice {
         this.invoiceCash = invoiceCash;
     }
 
-    public String getBillnumber() {
-        return billnumber;
-    }
-
-    public void setBillnumber(String billnumber) {
-        this.billnumber = billnumber;
-    }
-
     public String getSiteOriginName() {
         return siteOriginName;
     }
@@ -219,14 +165,6 @@ public class Invoice {
 
     public void setPaymentTypeName(String paymentTypeName) {
         this.paymentTypeName = paymentTypeName;
-    }
-
-    public String getUserDriverContact() {
-        return userDriverContact;
-    }
-
-    public void setUserDriverContact(String userDriverContact) {
-        this.userDriverContact = userDriverContact;
     }
 
     public String getSiteContact() {
@@ -253,70 +191,6 @@ public class Invoice {
         this.undergroundName = undergroundName;
     }
 
-    public String getClientWholesaleAddressComment() {
-        return clientWholesaleAddressComment;
-    }
-
-    public void setClientWholesaleAddressComment(String clientWholesaleAddressComment) {
-        this.clientWholesaleAddressComment = clientWholesaleAddressComment;
-    }
-
-    public Integer getInvoicePresenceId() {
-        return invoicePresenceId;
-    }
-
-    public void setInvoicePresenceId(Integer invoicePresenceId) {
-        this.invoicePresenceId = invoicePresenceId;
-    }
-
-    public String getTradeRepresentativeContact() {
-        return tradeRepresentativeContact;
-    }
-
-    public void setTradeRepresentativeContact(String tradeRepresentativeContact) {
-        this.tradeRepresentativeContact = tradeRepresentativeContact;
-    }
-
-    public String getTradeRepresentativeUser() {
-        return tradeRepresentativeUser;
-    }
-
-    public void setTradeRepresentativeUser(String tradeRepresentativeUser) {
-        this.tradeRepresentativeUser = tradeRepresentativeUser;
-    }
-
-    public Integer getInvoicePaymentDelayLeft() {
-        return invoicePaymentDelayLeft;
-    }
-
-    public void setInvoicePaymentDelayLeft(Integer invoicePaymentDelayLeft) {
-        this.invoicePaymentDelayLeft = invoicePaymentDelayLeft;
-    }
-
-    public String getClientWholesaleAddressHouseCase() {
-        return clientWholesaleAddressHouseCase;
-    }
-
-    public void setClientWholesaleAddressHouseCase(String clientWholesaleAddressHouseCase) {
-        this.clientWholesaleAddressHouseCase = clientWholesaleAddressHouseCase;
-    }
-
-    public String getClientWholesaleAddressZipCode() {
-        return clientWholesaleAddressZipCode;
-    }
-
-    public void setClientWholesaleAddressZipCode(String clientWholesaleAddressZipCode) {
-        this.clientWholesaleAddressZipCode = clientWholesaleAddressZipCode;
-    }
-
-    public String getClientWholesaleAddressCity() {
-        return clientWholesaleAddressCity;
-    }
-
-    public void setClientWholesaleAddressCity(String clientWholesaleAddressCity) {
-        this.clientWholesaleAddressCity = clientWholesaleAddressCity;
-    }
-
     public Integer getInvoiceIsLegalAddress() {
         return invoiceIsLegalAddress;
     }
@@ -325,44 +199,12 @@ public class Invoice {
         this.invoiceIsLegalAddress = invoiceIsLegalAddress;
     }
 
-    public String getClientWholesaleContact() {
-        return clientWholesaleContact;
-    }
-
-    public void setClientWholesaleContact(String clientWholesaleContact) {
-        this.clientWholesaleContact = clientWholesaleContact;
-    }
-
-    public String getClientRetailContact() {
-        return clientRetailContact;
-    }
-
-    public void setClientRetailContact(String clientRetailContact) {
-        this.clientRetailContact = clientRetailContact;
-    }
-
-    public BigDecimal getPaymentPartial() {
-        return paymentPartial;
-    }
-
-    public void setPaymentPartial(BigDecimal paymentPartial) {
-        this.paymentPartial = paymentPartial;
-    }
-
     public Integer getCount() {
         return count;
     }
 
     public void setCount(Integer count) {
         this.count = count;
-    }
-
-    public Double getDiscountRetailId() {
-        return discountRetailId;
-    }
-
-    public void setDiscountRetailId(Double discountRetailId) {
-        this.discountRetailId = discountRetailId;
     }
 
     public Integer getClientRetailId() {
@@ -398,70 +240,6 @@ public class Invoice {
 
     public void setInvoiceId(Integer invoiceId) {
         this.invoiceId = invoiceId;
-    }
-
-    public Integer getWarehouseId() {
-        return warehouseId;
-    }
-
-    public void setWarehouseId(Integer warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
-    public Integer getSiteId() {
-        return siteId;
-    }
-
-    public void setSiteId(Integer siteId) {
-        this.siteId = siteId;
-    }
-
-    public Integer getUserDriverId() {
-        return userDriverId;
-    }
-
-    public void setUserDriverId(Integer userDriverId) {
-        this.userDriverId = userDriverId;
-    }
-
-    public Integer getUserCollectorId() {
-        return userCollectorId;
-    }
-
-    public void setUserCollectorId(Integer userCollectorId) {
-        this.userCollectorId = userCollectorId;
-    }
-
-    public String getUserDriverFullName() {
-        return userDriverFullName;
-    }
-
-    public void setUserDriverFullName(String userDriverFullName) {
-        this.userDriverFullName = userDriverFullName;
-    }
-
-    public String getUserCollectorFullName() {
-        return userCollectorFullName;
-    }
-
-    public void setUserCollectorFullName(String userCollectorFullName) {
-        this.userCollectorFullName = userCollectorFullName;
-    }
-
-    public Integer getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(Integer cityId) {
-        this.cityId = cityId;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
     }
 
     public Double getInvoiceWeight() {
@@ -528,69 +306,6 @@ public class Invoice {
         this.paymentTypeId = paymentTypeId;
     }
 
-    public Integer getInvoicePaymentDelay() {
-        return invoicePaymentDelay;
-    }
-
-    public void setInvoicePaymentDelay(Integer invoicePaymentDelay) {
-        this.invoicePaymentDelay = invoicePaymentDelay;
-    }
-
-    public Integer getClientWholesaleAddressId() {
-        return clientWholesaleAddressId;
-    }
-
-    public void setClientWholesaleAddressId(Integer clientWholesaleAddressId) {
-        this.clientWholesaleAddressId = clientWholesaleAddressId;
-    }
-
-    public String getClientWholesaleAgreementNumber() {
-        return clientWholesaleAgreementNumber;
-    }
-
-    public void setClientWholesaleAgreementNumber(String clientWholesaleAgreementNumber) {
-        this.clientWholesaleAgreementNumber = clientWholesaleAgreementNumber;
-    }
-
-    public String getClientWholesaleAddressStreet() {
-        return clientWholesaleAddressStreet;
-    }
-
-    public void setClientWholesaleAddressStreet(String clientWholesaleAddressStreet) {
-        this.clientWholesaleAddressStreet = clientWholesaleAddressStreet;
-    }
-
-    public String getClientWholesaleAddressHouseNumber() {
-        return clientWholesaleAddressHouseNumber;
-    }
-
-    public void setClientWholesaleAddressHouseNumber(String clientWholesaleAddressHouseNumber) {
-        this.clientWholesaleAddressHouseNumber = clientWholesaleAddressHouseNumber;
-    }
-
-    public String getClientWholesaleAddressApartment() {
-        return clientWholesaleAddressApartment;
-    }
-
-    public void setClientWholesaleAddressApartment(String clientWholesaleAddressApartment) {
-        this.clientWholesaleAddressApartment = clientWholesaleAddressApartment;
-    }
-
-    public String getClientWholesaleName() {
-        return clientWholesaleName;
-    }
-
-    public void setClientWholesaleName(String clientWholesaleName) {
-        this.clientWholesaleName = clientWholesaleName;
-    }
-
-    public Integer getClientWholesaleId() {
-        return clientWholesaleId;
-    }
-
-    public void setClientWholesaleId(Integer clientWholesaleId) {
-        this.clientWholesaleId = clientWholesaleId;
-    }
 
     public String getInvoiceDeliveryDate() {
         return invoiceDeliveryDate;
@@ -910,14 +625,6 @@ public class Invoice {
         this.feedbackModeId = feedbackModeId;
     }
 
-    public List<InvoiceProduct> getInvoiceProducts() {
-        return invoiceProducts;
-    }
-
-    public void setInvoiceProducts(List<InvoiceProduct> invoiceProducts) {
-        this.invoiceProducts = invoiceProducts;
-    }
-
     public ClientRetailAddress getClientRetailAddress() {
         return clientRetailAddress;
     }
@@ -977,38 +684,6 @@ public class Invoice {
         return fullClientRetailName;
     }
 
-    public String getClientWholesalePaymentDelay() {
-        return clientWholesalePaymentDelay;
-    }
-
-    public void setClientWholesalePaymentDelay(String clientWholesalePaymentDelay) {
-        this.clientWholesalePaymentDelay = clientWholesalePaymentDelay;
-    }
-
-    public ClientRetail getClientRetail() {
-        return clientRetail;
-    }
-
-    public void setClientRetail(ClientRetail clientRetail) {
-        this.clientRetail = clientRetail;
-    }
-
-    public ClientWholesale getClientWholesale() {
-        return clientWholesale;
-    }
-
-    public void setClientWholesale(ClientWholesale clientWholesale) {
-        this.clientWholesale = clientWholesale;
-    }
-
-    public Integer getClientWholesaleIsBlock() {
-        return clientWholesaleIsBlock;
-    }
-
-    public void setClientWholesaleIsBlock(Integer clientWholesaleIsBlock) {
-        this.clientWholesaleIsBlock = clientWholesaleIsBlock;
-    }
-
     public String getClientName() {
         return clientName;
     }
@@ -1025,29 +700,6 @@ public class Invoice {
         this.invoiceReceiverRequisite = invoiceReceiverRequisite;
     }
 
-    public BigDecimal getClientSumAll() {
-        return clientSumAll;
-    }
-
-    public void setClientSumAll(BigDecimal clientSumAll) {
-        this.clientSumAll = clientSumAll;
-    }
-
-    public BigDecimal getClientSumPeriod() {
-        return clientSumPeriod;
-    }
-
-    public void setClientSumPeriod(BigDecimal clientSumPeriod) {
-        this.clientSumPeriod = clientSumPeriod;
-    }
-
-    public String getFirstOrderDate() {
-        return firstOrderDate;
-    }
-
-    public void setFirstOrderDate(String firstOrderDate) {
-        this.firstOrderDate = firstOrderDate;
-    }
 
     public String getClientRetailContactTel() {
         return clientRetailContactTel;
