@@ -377,7 +377,7 @@ public class DPDTest {
             }
             // если есть корпус
             if (hasHouseCaseString(rawStreetString)) {
-                rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "houseCase", HOUSECASE_REGEX, "22");
+                rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "houseKorpus", HOUSECASE_REGEX, "22");
             }
             // если есть дом
             if (hasHouseString(rawStreetString)) {

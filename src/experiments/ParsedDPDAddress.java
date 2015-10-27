@@ -5,6 +5,8 @@
  */
 package experiments;
 
+import java.lang.reflect.Field;
+
 /**
  *
  * @author dimasik
@@ -31,12 +33,15 @@ public class ParsedDPDAddress extends ClientAddress {
     }
 
     public void setFieldByName(String fieldName, String value) {
-        if (fieldName.equals("flat")) {
-            this.flat = value;
-        } else if (fieldName.equals("houseCase")) {
-            this.houseKorpus = value;
-        } else if (fieldName.equals("house")) {
-            this.house = value;
+        try {
+            Class c = ClientAddress.class;
+            Field f = c.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            f.set(this, value);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e){
+            e.printStackTrace();
         }
     }
 

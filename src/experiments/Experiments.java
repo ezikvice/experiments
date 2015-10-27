@@ -31,36 +31,36 @@ public class Experiments {
     public static void main(String[] args) {
         
         DPDTest t = new DPDTest();
-        ClientRetailAddress cra = new ClientRetailAddress();
-        cra.setClientRetailAddressCity("Астрахань");
-        cra.setClientRetailAddressId(1);
-        cra.setClientRetailAddressStreet("Улица Каменноярская");
-        cra.setClientRetailAddressHouseNumber("33");
-        cra.setClientRetailAddressApartment("1");
-        
-        Invoice invoice = new Invoice();
-        invoice.setClientRetailAddress(cra);
-        
-        DpdClientAddressStatus dpdStatus = t.createDPDAddress(invoice);
-        
-        System.out.println("createAddress");
-        System.out.println("---------------");
-        System.out.println("address status:");
-        System.out.println("code: " + dpdStatus.getCode());
-        System.out.println("status: " + dpdStatus.getStatus());
-        System.out.println("errorMessage: " + dpdStatus.getErrorMessage());
-        System.out.println("---------------");
-        
-        if(dpdStatus.getCode().equals("1")){
-            dpdStatus = t.updateDPDAddress(cra);
-            System.out.println("updateAddress");
-            System.out.println("address status:");
-            System.out.println("code: " + dpdStatus.getCode());
-            System.out.println("status: " + dpdStatus.getStatus());
-            System.out.println("errorMessage: " + dpdStatus.getErrorMessage());
-            System.out.println("---------------");            
-        }
-//        t.makeExcelFromAdressList();
+//        ClientRetailAddress cra = new ClientRetailAddress();
+//        cra.setClientRetailAddressCity("Астрахань");
+//        cra.setClientRetailAddressId(1);
+//        cra.setClientRetailAddressStreet("Улица Каменноярская");
+//        cra.setClientRetailAddressHouseNumber("33");
+//        cra.setClientRetailAddressApartment("1");
+//        
+//        Invoice invoice = new Invoice();
+//        invoice.setClientRetailAddress(cra);
+//        
+//        DpdClientAddressStatus dpdStatus = t.createDPDAddress(invoice);
+//        
+//        System.out.println("createAddress");
+//        System.out.println("---------------");
+//        System.out.println("address status:");
+//        System.out.println("code: " + dpdStatus.getCode());
+//        System.out.println("status: " + dpdStatus.getStatus());
+//        System.out.println("errorMessage: " + dpdStatus.getErrorMessage());
+//        System.out.println("---------------");
+//        
+//        if(dpdStatus.getCode().equals("1")){
+//            dpdStatus = t.updateDPDAddress(cra);
+//            System.out.println("updateAddress");
+//            System.out.println("address status:");
+//            System.out.println("code: " + dpdStatus.getCode());
+//            System.out.println("status: " + dpdStatus.getStatus());
+//            System.out.println("errorMessage: " + dpdStatus.getErrorMessage());
+//            System.out.println("---------------");            
+//        }
+        t.makeExcelFromAdressList();
         
         
     }
