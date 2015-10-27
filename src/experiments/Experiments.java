@@ -38,7 +38,10 @@ public class Experiments {
         cra.setClientRetailAddressHouseNumber("33");
         cra.setClientRetailAddressApartment("1");
         
-        DpdClientAddressStatus dpdStatus = t.createDPDAddress(cra);
+        Invoice invoice = new Invoice();
+        invoice.setClientRetailAddress(cra);
+        
+        DpdClientAddressStatus dpdStatus = t.createDPDAddress(invoice);
         
         System.out.println("createAddress");
         System.out.println("---------------");

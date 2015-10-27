@@ -340,7 +340,7 @@ public class DPDTest {
         return streetAbbrMap;
     }
 
-    public void parseAddresForDPD(Map<String, String> strMap, ClientRetailAddress clientRetailAddress) {
+    public void parseAddressForDPD(ParsedDPDAddress parsedAddr, ClientRetailAddress clientRetailAddress) {
 
         String rawStreetString = clientRetailAddress.getClientRetailAddressStreet();
         Boolean hasFlat = false;
@@ -354,52 +354,52 @@ public class DPDTest {
             Map<String, String> beforeAfterMap = new HashMap<String, String>();
             splitStringByRegex(beforeAfterMap, rawStreetString, HOUSE_CASE_FLAT_REGEX);
 
-            strMap.put("street", beforeAfterMap.get("before"));
+            parsedAddr.setStreet(beforeAfterMap.get("before"));
             String[] afterString = beforeAfterMap.get("after").split("-");
 
             // может быть 2 формата: дом-квартира или дом-корпус-квартира
             // 
             if (afterString.length == 2) {
-                strMap.put("house", afterString[0]);
-                strMap.put("flat", afterString[1]);
+                parsedAddr.setHouse(afterString[0]);
+                parsedAddr.setFlat(afterString[1]);
             } else if (afterString.length == 3) {
-                strMap.put("house", afterString[0]);
-                strMap.put("houseCase", afterString[1]);
-                strMap.put("flat", afterString[2]);
+                parsedAddr.setHouse(afterString[0]);
+                parsedAddr.setHouseKorpus(afterString[1]);
+                parsedAddr.setFlat(afterString[2]);
             }
-            strMap.put("style", "21");
+            parsedAddr.setStyle("21");
         } // дальше начинаем искать адрес начиная с квартиры
         else {
             // если есть квартира
             if (hasFlatString(rawStreetString)) {
                 hasFlat = true;
-                rawStreetString = cutAddressPart(strMap, rawStreetString, "flat", FLAT_REGEX, "22");
+                rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "flat", FLAT_REGEX, "22");
             }
             // если есть корпус
             if (hasHouseCaseString(rawStreetString)) {
-                rawStreetString = cutAddressPart(strMap, rawStreetString, "houseCase", HOUSECASE_REGEX, "22");
+                rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "houseCase", HOUSECASE_REGEX, "22");
             }
             // если есть дом
             if (hasHouseString(rawStreetString)) {
-                rawStreetString = cutAddressPart(strMap, rawStreetString, "house", HOUSE_REGEX, "22");
+                rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "house", HOUSE_REGEX, "22");
             } else { 
                 // если токен "дом" не нашли, пробуем найти просто по дроби
                 if(hasMatching(rawStreetString, HOUSE_SPLASH_REGEX)){
-                    rawStreetString = cutAddressPart(strMap, rawStreetString, "house", HOUSE_SPLASH_REGEX, "23");
+                    rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "house", HOUSE_SPLASH_REGEX, "23");
                 }
                 // последняя надежда найти номер дома. 
                 // если встречалась квартира, то ищем самое последнее число
                 // и надеемся, что все говно из строки уже убрали, и это номер дома
                 else if(hasFlat){
                     if(hasMatching(rawStreetString, HOUSE_LAST_HOPE_REGEX)){
-                        rawStreetString = cutAddressPart(strMap, rawStreetString, "house", HOUSE_LAST_HOPE_REGEX, "25"); // ТАК РАЗБИВАТЬ НА 2 КУСКА НЕЛЬЗЯ! потому что "15-я Парковая ул" уйдет в мусор все, что после 15
+                        rawStreetString = cutAddressPart(parsedAddr, rawStreetString, "house", HOUSE_LAST_HOPE_REGEX, "25"); // ТАК РАЗБИВАТЬ НА 2 КУСКА НЕЛЬЗЯ! потому что "15-я Парковая ул" уйдет в мусор все, что после 15
                     }
                     
                 }
             }
             
             rawStreetString = cutBadEnd(rawStreetString);
-            strMap.put("street", rawStreetString);
+            parsedAddr.setStreet(rawStreetString);
             
         }
         /*
@@ -451,7 +451,7 @@ public class DPDTest {
 //                    String tokenToCompare = token.toLowerCase();
                     for (Map.Entry<String, List<String>> entry : streetAbbrMap.entrySet()) {
                         if (entry.getValue().contains(tokenToCompare)) {
-                            strMap.put("streetAbbr", entry.getKey());
+                            parsedAddr.setStreetAbbr(entry.getKey());
                             streetTokensList.remove(token);
 //                        }else if(){
                         
@@ -468,7 +468,7 @@ public class DPDTest {
                 }
                 
                 rawStreetString = buildedStreet.toString().trim();
-                strMap.put("street", rawStreetString);
+                parsedAddr.setStreet(rawStreetString);
                 endOfSearch = true;
             }
             
@@ -480,12 +480,12 @@ public class DPDTest {
          а вторую часть запихивает в соответствующее поле
     
          */
-    public String cutAddressPart(Map<String, String> strMap, String rawStreetString, String nameOfFieldToCut, String regexString, String style) {
+    public String cutAddressPart(ParsedDPDAddress parsedAddr, String rawStreetString, String nameOfFieldToCut, String regexString, String style) {
         
         Map<String, String> beforeAfterMap = new HashMap<String, String>();
 
         splitStringByRegex(beforeAfterMap, rawStreetString, regexString);
-        strMap.put("street", beforeAfterMap.get("before"));
+        parsedAddr.setStreet(beforeAfterMap.get("before"));
         String afterString = beforeAfterMap.get("after");
 
         // выцепляем кусок адреса, остальное все что справа - мусор
@@ -497,9 +497,9 @@ public class DPDTest {
             adressPartNum = m.group(5);
         }
 
-        strMap.put(nameOfFieldToCut, adressPartNum);  // TODO: проверить
+        parsedAddr.setFieldByName(nameOfFieldToCut, adressPartNum);  // TODO: проверить
         rawStreetString = beforeAfterMap.get("before");
-        strMap.put("style", style);
+        parsedAddr.setStyle(style);
         return rawStreetString;
 
     }
@@ -561,21 +561,22 @@ public class DPDTest {
 
                 row = sheet.createRow(r);
 
-                Map<String, String> alexMap = new HashMap<>();
+//                Map<String, String> alexMap = new HashMap<>();
+                ParsedDPDAddress alexAddr = new ParsedDPDAddress();
 //                parseAddressFromString(alexMap, cra);
-                parseAddresForDPD(alexMap, cra);
+                parseAddressForDPD(alexAddr, cra);
 
                 Short index = 1;
-                if (alexMap.get("style") != null && alexMap.get("style") != "") {
-                    index = Short.parseShort(alexMap.get("style"));
+                if (alexAddr.getStyle() != null && alexAddr.getStyle() != "") {
+                    index = Short.parseShort(alexAddr.getStyle());
                 }
 
                 setCellString(row, 0, currentAddress[1], style, index);
-                setCellString(row, 1, alexMap.get("street"), style, index);
-                setCellString(row, 2, alexMap.get("house"), style, index);
-                setCellString(row, 3, alexMap.get("houseCase"), style, index);
-                setCellString(row, 4, alexMap.get("flat"), style, index);
-                setCellString(row, 5, alexMap.get("streetAbbr"), style, index);
+                setCellString(row, 1, alexAddr.getStreet(), style, index);
+                setCellString(row, 2, alexAddr.getHouse(), style, index);
+                setCellString(row, 3, alexAddr.getHouseKorpus(), style, index);
+                setCellString(row, 4, alexAddr.getFlat(), style, index);
+                setCellString(row, 5, alexAddr.getStreetAbbr(), style, index);
 
                 row2 = sheet2.createRow(r);
                 Cell streetCell2 = row2.createCell(0);
@@ -795,38 +796,26 @@ public class DPDTest {
         return auth;
     }
     
+    void fillDPDAddressByParsedAddress(ClientAddress dpdAddress, ParsedDPDAddress parsedAddr){
+        dpdAddress.setStreet(parsedAddr.getStreet());
     
+    }
     
-    DpdClientAddressStatus createDPDAddress(ClientRetailAddress address)  {
-        
-        Map<String, String> addrMap = new HashMap<>();
-        
-        parseAddresForDPD(addrMap, address);
+    DpdClientAddressStatus createDPDAddress(Invoice invoice)  {
         
         DpdClientAddress clientAddr = new DpdClientAddress();
 
         Auth auth = fillAuthInfo();
         clientAddr.setAuth(auth);
 
-        ClientAddress dpdAddress = new ClientAddress();
-
-        dpdAddress.setCode(address.getClientRetailAddressId().toString());
-        dpdAddress.setName("ООО Ин-Ритейл");
-    //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
-        dpdAddress.setCountryName("Россия");
-//        senderAddr.setIndex("194294");
-//        dpdAddress.setRegion("Санкт-Петербург");
-        dpdAddress.setCity(address.getClientRetailAddressCity());
-        dpdAddress.setStreet(addrMap.get("street"));
-        dpdAddress.setStreetAbbr(addrMap.get("streetAbbr"));
-        dpdAddress.setHouse(address.getClientRetailAddressHouseNumber());
-        dpdAddress.setHouseKorpus(address.getClientRetailAddressHouseCase());
-        dpdAddress.setFlat(address.getClientRetailAddressApartment());
-        dpdAddress.setContactFio("Иванов Андрей Вячеславович");
-        dpdAddress.setContactPhone("89052833938");
-    //        senderAddr.setContactEmail("test@test.com");
-    //        senderAddr.setInstructions("подъезд со стороны двора");
-
+        ClientAddress dpdAddress = fillDPDAddressFromInvoice(invoice);
+        
+        ParsedDPDAddress parsedAddr = new ParsedDPDAddress();
+        
+        ClientRetailAddress address = invoice.getClientRetailAddress();
+        parseAddressForDPD(parsedAddr, address);
+        
+        fillDPDAddressByParsedAddress(dpdAddress, parsedAddr);
         
         
         clientAddr.setClientAddress(dpdAddress);
@@ -849,25 +838,6 @@ public class DPDTest {
 
     }
     
-    DpdClientAddress fillDPDAddress(ClientRetailAddress clientRetailAddress){
-        DpdClientAddress clientAddr = new DpdClientAddress();
-        
-//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
-//        DPDConfig dpdConfig = dpdConfigList.get(0);
-
-        Auth auth = new Auth();
-//        auth.setClientKey(dpdConfig.getDpdClientKey());
-//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
-        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
-        auth.setClientNumber(1002017631);
-        clientAddr.setAuth(auth);
-
-        
-        
-        return clientAddr;
-    }
-    
-    
     DpdClientAddressStatus updateDPDAddress(ClientRetailAddress address)  {
         
         DpdClientAddress clientAddr = new DpdClientAddress();
@@ -883,8 +853,8 @@ public class DPDTest {
         clientAddr.setAuth(auth);
 
         
-        Map<String, String> addrMap = new HashMap<>();
-        parseAddresForDPD(addrMap, address);
+        ParsedDPDAddress parsedAddr = new ParsedDPDAddress();
+        parseAddressForDPD(parsedAddr, address);
         
         ClientAddress dpdAddress = new ClientAddress();
 
@@ -895,8 +865,8 @@ public class DPDTest {
 //        senderAddr.setIndex("194294");
 //        dpdAddress.setRegion("Санкт-Петербург");
         dpdAddress.setCity(address.getClientRetailAddressCity());
-        dpdAddress.setStreet(addrMap.get("street"));
-        dpdAddress.setStreetAbbr(addrMap.get("streetAbbr"));
+        dpdAddress.setStreet(parsedAddr.getStreet());
+        dpdAddress.setStreetAbbr(parsedAddr.getStreetAbbr());
         dpdAddress.setHouse(address.getClientRetailAddressHouseNumber());
         dpdAddress.setHouseKorpus(address.getClientRetailAddressHouseCase());
         dpdAddress.setFlat(address.getClientRetailAddressApartment());
