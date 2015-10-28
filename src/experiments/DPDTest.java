@@ -57,195 +57,6 @@ public class DPDTest {
     private final String STRING_BAD_END_REGEX = "([;, ]+)$";
     private final String WORD_REGEX = "[А-Яа-я]{3,}";
 
-    Boolean hasMatching(String requestString, String regex) {
-        Pattern p = Pattern.compile(regex.toLowerCase());
-        Matcher m = p.matcher(requestString);
-        return m.find();
-    }
-
-    Boolean hasHouseCaseFlatString(String streetString) {
-        return hasMatching(streetString, HOUSE_CASE_FLAT_REGEX);
-    }
-
-    Boolean hasHouseString(String streetString) {
-        return hasMatching(streetString, HOUSE_REGEX);
-    }
-
-    Boolean hasFlatString(String streetString) {
-        return hasMatching(streetString, FLAT_REGEX);
-    }
-
-    Boolean hasHouseCaseString(String streetString) {
-        return hasMatching(streetString, HOUSECASE_REGEX);
-    }
-
-    Integer getMatchingIndex(String requestString, String regex) {
-
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(requestString);
-        Integer index = -1;
-        if (m.find()) {
-            index = m.start(0);
-//        } else {
-//            System.out.println("didn`t match: requestString=" + requestString + ", regex=" + regex);
-        }
-
-        return index;
-    }
-
-    void splitStringByRegex(Map<String, String> splittedMap, String requestedString, String regex) {
-
-        Integer index = getMatchingIndex(requestedString.toLowerCase(), regex);
-        if (index != -1) {
-            splittedMap.put("rawString", requestedString);
-            splittedMap.put("before", requestedString.substring(0, index));
-            splittedMap.put("after", requestedString.substring(index));
-        } else {
-            splittedMap.put("rawString", requestedString);
-            splittedMap.put("before", requestedString);
-            splittedMap.put("after", "");
-        }
-    }
-
-    public static void run() {
-
-        DpdOrdersData orderData = new DpdOrdersData();
-
-        Auth auth = new Auth();
-        auth.setClientNumber(1002017631);
-        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
-        orderData.setAuth(auth);
-
-        Header header = new Header();
-
-        XMLGregorianCalendar date = new XMLGregorianCalendarImpl();
-        date.setYear(2015);
-        date.setMonth(9);
-        date.setDay(8);
-
-        header.setDatePickup(date);
-        header.setPayer(new Long(1002017631));
-
-        Address senderAddr = new Address();
-        senderAddr.setName("Бэггинс Фродо Бильбович");
-        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
-        senderAddr.setCountryName("Россия");
-        senderAddr.setCity("Нижнекамск");
-        senderAddr.setStreet("Чеширский холм");
-        senderAddr.setStreetAbbr("ул.");
-        senderAddr.setHouse("23");
-        senderAddr.setHouseKorpus("3");
-        senderAddr.setFlat("34");
-        senderAddr.setContactFio("Бэггинс Фродо Бильбович");
-        senderAddr.setContactPhone("89112345678");
-        senderAddr.setContactEmail("test@test.com");
-        senderAddr.setInstructions("подъезд со стороны двора");
-
-        header.setSenderAddress(senderAddr);
-
-        header.setPickupTimePeriod("9-18");
-
-        orderData.setHeader(header);
-
-        Order order = new Order();
-
-        order.setOrderNumberInternal("PS-12345");
-        order.setServiceCode("ECN");
-        order.setServiceVariant("ТД");
-        order.setCargoNumPack(1); // количество грузомест в отправке
-        order.setCargoWeight(3);
-        order.setCargoVolume(0.05); // объем в кубометрах
-        order.setCargoRegistered(false); // ценный груз
-        order.setCargoValue(Double.parseDouble("2500")); // сумма объявленной ценности
-        order.setCargoCategory("товары для животных"); // TODO: выяснить что пихать в этот параметр
-        // возсожные формы оплаты ОУО (оплата у отправителя), ОУП (оплата у получателя)
-        order.setPaymentType("ОУО");
-        order.setDeliveryTimePeriod("9-18");  // TODO: выяснить для чего нужен этот параметр
-
-        Address receiverAddr = new Address();
-        receiverAddr.setName("Бэггинс Фродо Бильбович");
-        receiverAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
-        receiverAddr.setCountryName("Россия");
-        receiverAddr.setCity("Нижнекамск");
-        receiverAddr.setStreet("Чеширский холм");
-        receiverAddr.setStreetAbbr("ул.");
-        receiverAddr.setHouse("23");
-        receiverAddr.setHouseKorpus("3");
-        receiverAddr.setFlat("34");
-        receiverAddr.setContactFio("Бэггинс Фродо Бильбович");
-        receiverAddr.setContactPhone("89112345678");
-        receiverAddr.setContactEmail("test@test.com");
-        receiverAddr.setInstructions("подъезд со стороны двора");
-
-        order.setReceiverAddress(receiverAddr);
-
-        orderData.getOrder().add(order);
-
-        // создание адреса
-//        try {
-//            DPDOrderService service = new DPDOrderService();
-//            DPDOrder port = service.getDPDOrderPort();
-//            // TODO process result here
-//            java.util.List<DpdOrderStatus> resultList = port.createOrder(orderData);
-//            DpdOrderStatus result = resultList.get(0);
-//            System.out.println("Status = "+result.getStatus()+"\n"
-//                    + "order = " + result.getOrderNum() + "\n"
-//                    + "message = " + result.getErrorMessage()
-//            );
-//            } 
-//        catch (Exception ex) {
-//                 ex.printStackTrace();
-//            }
-        // создание заказа
-//        try {
-//            DPDOrderService service = new DPDOrderService();
-//            DPDOrder port = service.getDPDOrderPort();
-//            // TODO process result here
-//            java.util.List<DpdOrderStatus> resultList = port.createOrder(orderData);
-//            DpdOrderStatus result = resultList.get(0);
-//            System.out.println("Status = "+result.getStatus()+"\n"
-//                    + "order = " + result.getOrderNum() + "\n"
-//                    + "message = " + result.getErrorMessage()
-//            );
-//            } 
-//        catch (Exception ex) {
-//                 ex.printStackTrace();
-//            }
-        // получение статуса заказа
-        try {
-            DpdGetOrderStatus orderParam = new DpdGetOrderStatus();
-            orderParam.setAuth(auth);
-
-            InternalOrderNumber invoiceId = new InternalOrderNumber();
-            invoiceId.setOrderNumberInternal("PS-12345");
-            orderParam.getOrder().add(invoiceId);
-
-            DPDOrderService service = new DPDOrderService();
-            DPDOrder port = service.getDPDOrderPort();
-            java.util.List<DpdOrderStatus> resultStatusList = port.getOrderStatus(orderParam);
-            DpdOrderStatus result = resultStatusList.get(0);
-            System.out.println("\n\nStatus = " + result.getStatus() + "\n"
-                    + "order = " + result.getOrderNum() + "\n"
-                    + "message = " + result.getErrorMessage()
-            );
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public List<DpdOrderStatus> getResult(DPDOrder service, DpdOrdersData ordersData) {
-        try {
-            final List<DpdOrderStatus> orderStatusList = service.createOrder(ordersData);
-            return orderStatusList;
-        } catch (WSFault_Exception e) {
-            System.err.println("WSFault: " + e.getFaultInfo().getCode() + " / " + e.getFaultInfo().getMessage());
-        } catch (Throwable e) {
-            System.err.println("Fatal error: " + e);
-        }
-        return null;
-    }
-
     Map<String, List<String>> makeStreetAbbrMap() {
         Map<String, List<String>> streetAbbrMap = new HashMap<String, List<String>>();
 
@@ -338,6 +149,56 @@ public class DPDTest {
         ));
 
         return streetAbbrMap;
+    }
+
+    Boolean hasMatching(String requestString, String regex) {
+        Pattern p = Pattern.compile(regex.toLowerCase());
+        Matcher m = p.matcher(requestString);
+        return m.find();
+    }
+
+    Boolean hasHouseCaseFlatString(String streetString) {
+        return hasMatching(streetString, HOUSE_CASE_FLAT_REGEX);
+    }
+
+    Boolean hasHouseString(String streetString) {
+        return hasMatching(streetString, HOUSE_REGEX);
+    }
+
+    Boolean hasFlatString(String streetString) {
+        return hasMatching(streetString, FLAT_REGEX);
+    }
+
+    Boolean hasHouseCaseString(String streetString) {
+        return hasMatching(streetString, HOUSECASE_REGEX);
+    }
+
+    Integer getMatchingIndex(String requestString, String regex) {
+
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(requestString);
+        Integer index = -1;
+        if (m.find()) {
+            index = m.start(0);
+//        } else {
+//            System.out.println("didn`t match: requestString=" + requestString + ", regex=" + regex);
+        }
+
+        return index;
+    }
+
+    void splitStringByRegex(Map<String, String> splittedMap, String requestedString, String regex) {
+
+        Integer index = getMatchingIndex(requestedString.toLowerCase(), regex);
+        if (index != -1) {
+            splittedMap.put("rawString", requestedString);
+            splittedMap.put("before", requestedString.substring(0, index));
+            splittedMap.put("after", requestedString.substring(index));
+        } else {
+            splittedMap.put("rawString", requestedString);
+            splittedMap.put("before", requestedString);
+            splittedMap.put("after", "");
+        }
     }
 
     public void parseAddressForDPD(ParsedDPDAddress parsedAddr, ClientRetailAddress clientRetailAddress) {
@@ -504,6 +365,163 @@ public class DPDTest {
 
     }
 
+    public String cutBadEnd(String rawStreetString){
+        
+        Pattern p = Pattern.compile(STRING_BAD_END_REGEX);
+        Matcher m = p.matcher(rawStreetString);
+        if(m.find()){
+            Integer index = m.start();
+            rawStreetString = rawStreetString.substring(0, index);
+        }
+        
+        return rawStreetString;
+    }
+    
+    
+    
+    
+    Auth fillAuthInfo(){
+        Auth auth = new Auth();
+        
+//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
+//        DPDConfig dpdConfig = dpdConfigList.get(0);
+//        auth.setClientKey(dpdConfig.getDpdClientKey());
+//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
+        
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        auth.setClientNumber(1002017631);
+        
+        return auth;
+    }
+    
+    void fillDPDAddressByParsedAddress(ClientAddress dpdAddress, ParsedDPDAddress parsedAddr){
+        dpdAddress.setStreet(parsedAddr.getStreet());
+    
+    }
+    
+    DpdClientAddressStatus createDPDAddress(Invoice invoice)  {
+        
+        DpdClientAddress clientAddr = new DpdClientAddress();
+
+        Auth auth = fillAuthInfo();
+        clientAddr.setAuth(auth);
+
+        ClientAddress dpdAddress = fillDPDAddressFromInvoice(invoice);
+        
+        ParsedDPDAddress parsedAddr = new ParsedDPDAddress();
+        
+        ClientRetailAddress address = invoice.getClientRetailAddress();
+        parseAddressForDPD(parsedAddr, address);
+        
+        fillDPDAddressByParsedAddress(dpdAddress, parsedAddr);
+        
+        
+        clientAddr.setClientAddress(dpdAddress);
+
+        DpdClientAddressStatus result = new DpdClientAddressStatus();
+        
+        try { // Call Web Service Operation
+            DPDOrderService service = new DPDOrderService();
+            DPDOrder port = service.getDPDOrderPort();
+            // TODO initialize WS operation arguments here
+            // 
+            result = port.createAddress(clientAddr);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // TODO handle custom exceptions here
+        }
+
+        return result;
+
+    }
+    
+    DpdClientAddressStatus updateDPDAddress(ClientRetailAddress address)  {
+        
+        DpdClientAddress clientAddr = new DpdClientAddress();
+
+//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
+//        DPDConfig dpdConfig = dpdConfigList.get(0);
+
+        Auth auth = new Auth();
+//        auth.setClientKey(dpdConfig.getDpdClientKey());
+//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        auth.setClientNumber(1002017631);
+        clientAddr.setAuth(auth);
+
+        
+        ParsedDPDAddress parsedAddr = new ParsedDPDAddress();
+        parseAddressForDPD(parsedAddr, address);
+        
+        ClientAddress dpdAddress = new ClientAddress();
+
+        dpdAddress.setCode(address.getClientRetailAddressId().toString());
+        dpdAddress.setName("ООО Ин-Ритейл");
+    //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
+        dpdAddress.setCountryName("Россия");
+//        senderAddr.setIndex("194294");
+//        dpdAddress.setRegion("Санкт-Петербург");
+        dpdAddress.setCity(address.getClientRetailAddressCity());
+        dpdAddress.setStreet(parsedAddr.getStreet());
+        dpdAddress.setStreetAbbr(parsedAddr.getStreetAbbr());
+        dpdAddress.setHouse(address.getClientRetailAddressHouseNumber());
+        dpdAddress.setHouseKorpus(address.getClientRetailAddressHouseCase());
+        dpdAddress.setFlat(address.getClientRetailAddressApartment());
+        dpdAddress.setContactFio("Иванов Андрей Вячеславович");
+        dpdAddress.setContactPhone("89052833938");
+    //        senderAddr.setContactEmail("test@test.com");
+    //        senderAddr.setInstructions("подъезд со стороны двора");
+        
+        clientAddr.setClientAddress(dpdAddress);
+
+        DpdClientAddressStatus result = new DpdClientAddressStatus();
+        
+        try { // Call Web Service Operation
+            DPDOrderService service = new DPDOrderService();
+            DPDOrder port = service.getDPDOrderPort();
+            // TODO initialize WS operation arguments here
+            // 
+            result = port.updateAddress(clientAddr);
+
+            System.out.println("Result = "+result);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // TODO handle custom exceptions here
+        }
+
+        return result;
+    }
+    
+    
+    
+    ClientAddress fillDPDAddressFromInvoice(Invoice invoice){
+        ClientAddress dpdAddress = new ClientAddress();
+        ClientRetailAddress cra = invoice.getClientRetailAddress();
+        InvoiceRecipient recipient = invoice.getInvoiceRecipient();
+        
+        dpdAddress.setCode(cra.getClientRetailAddressId().toString());
+        
+        dpdAddress.setRegion(cra.getClientRetailAddressRegion());
+        dpdAddress.setCity(cra.getClientRetailAddressCity());
+        dpdAddress.setStreet(cra.getClientRetailAddressStreet());
+        dpdAddress.setHouse(cra.getClientRetailAddressHouseNumber());
+        dpdAddress.setHouseKorpus(cra.getClientRetailAddressHouseCase());
+        dpdAddress.setFlat(cra.getClientRetailAddressApartment());
+        
+        dpdAddress.setContactFio(recipient.getRecipientName());
+        dpdAddress.setContactEmail(recipient.getRecipientEmail());
+        dpdAddress.setContactPhone(recipient.getRecipientPhone());
+        
+        dpdAddress.setInstructions(invoice.getInvoiceComment());
+    
+        return dpdAddress;
+    }
+    
+    
+    
+    
+    
     public void makeExcelFromAdressList() {
 
         //открываем файл
@@ -767,160 +785,144 @@ public class DPDTest {
 //        return result;
     }
 
-    public String cutBadEnd(String rawStreetString){
-        
-        Pattern p = Pattern.compile(STRING_BAD_END_REGEX);
-        Matcher m = p.matcher(rawStreetString);
-        if(m.find()){
-            Integer index = m.start();
-            rawStreetString = rawStreetString.substring(0, index);
-        }
-        
-        return rawStreetString;
-    }
-    
-    
-    
-    
-    Auth fillAuthInfo(){
+    public static void run() {
+
+        DpdOrdersData orderData = new DpdOrdersData();
+
         Auth auth = new Auth();
-        
-//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
-//        DPDConfig dpdConfig = dpdConfigList.get(0);
-//        auth.setClientKey(dpdConfig.getDpdClientKey());
-//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
-        
-        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
         auth.setClientNumber(1002017631);
-        
-        return auth;
-    }
-    
-    void fillDPDAddressByParsedAddress(ClientAddress dpdAddress, ParsedDPDAddress parsedAddr){
-        dpdAddress.setStreet(parsedAddr.getStreet());
-    
-    }
-    
-    DpdClientAddressStatus createDPDAddress(Invoice invoice)  {
-        
-        DpdClientAddress clientAddr = new DpdClientAddress();
+        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
+        orderData.setAuth(auth);
 
-        Auth auth = fillAuthInfo();
-        clientAddr.setAuth(auth);
+        Header header = new Header();
 
-        ClientAddress dpdAddress = fillDPDAddressFromInvoice(invoice);
-        
-        ParsedDPDAddress parsedAddr = new ParsedDPDAddress();
-        
-        ClientRetailAddress address = invoice.getClientRetailAddress();
-        parseAddressForDPD(parsedAddr, address);
-        
-        fillDPDAddressByParsedAddress(dpdAddress, parsedAddr);
-        
-        
-        clientAddr.setClientAddress(dpdAddress);
+        XMLGregorianCalendar date = new XMLGregorianCalendarImpl();
+        date.setYear(2015);
+        date.setMonth(9);
+        date.setDay(8);
 
-        DpdClientAddressStatus result = new DpdClientAddressStatus();
-        
-        try { // Call Web Service Operation
+        header.setDatePickup(date);
+        header.setPayer(new Long(1002017631));
+
+        Address senderAddr = new Address();
+        senderAddr.setName("Бэггинс Фродо Бильбович");
+        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
+        senderAddr.setCountryName("Россия");
+        senderAddr.setCity("Нижнекамск");
+        senderAddr.setStreet("Чеширский холм");
+        senderAddr.setStreetAbbr("ул.");
+        senderAddr.setHouse("23");
+        senderAddr.setHouseKorpus("3");
+        senderAddr.setFlat("34");
+        senderAddr.setContactFio("Бэггинс Фродо Бильбович");
+        senderAddr.setContactPhone("89112345678");
+        senderAddr.setContactEmail("test@test.com");
+        senderAddr.setInstructions("подъезд со стороны двора");
+
+        header.setSenderAddress(senderAddr);
+
+        header.setPickupTimePeriod("9-18");
+
+        orderData.setHeader(header);
+
+        Order order = new Order();
+
+        order.setOrderNumberInternal("PS-12345");
+        order.setServiceCode("ECN");
+        order.setServiceVariant("ТД");
+        order.setCargoNumPack(1); // количество грузомест в отправке
+        order.setCargoWeight(3);
+        order.setCargoVolume(0.05); // объем в кубометрах
+        order.setCargoRegistered(false); // ценный груз
+        order.setCargoValue(Double.parseDouble("2500")); // сумма объявленной ценности
+        order.setCargoCategory("товары для животных"); // TODO: выяснить что пихать в этот параметр
+        // возсожные формы оплаты ОУО (оплата у отправителя), ОУП (оплата у получателя)
+        order.setPaymentType("ОУО");
+        order.setDeliveryTimePeriod("9-18");  // TODO: выяснить для чего нужен этот параметр
+
+        Address receiverAddr = new Address();
+        receiverAddr.setName("Бэггинс Фродо Бильбович");
+        receiverAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
+        receiverAddr.setCountryName("Россия");
+        receiverAddr.setCity("Нижнекамск");
+        receiverAddr.setStreet("Чеширский холм");
+        receiverAddr.setStreetAbbr("ул.");
+        receiverAddr.setHouse("23");
+        receiverAddr.setHouseKorpus("3");
+        receiverAddr.setFlat("34");
+        receiverAddr.setContactFio("Бэггинс Фродо Бильбович");
+        receiverAddr.setContactPhone("89112345678");
+        receiverAddr.setContactEmail("test@test.com");
+        receiverAddr.setInstructions("подъезд со стороны двора");
+
+        order.setReceiverAddress(receiverAddr);
+
+        orderData.getOrder().add(order);
+
+        // создание адреса
+//        try {
+//            DPDOrderService service = new DPDOrderService();
+//            DPDOrder port = service.getDPDOrderPort();
+//            // TODO process result here
+//            java.util.List<DpdOrderStatus> resultList = port.createOrder(orderData);
+//            DpdOrderStatus result = resultList.get(0);
+//            System.out.println("Status = "+result.getStatus()+"\n"
+//                    + "order = " + result.getOrderNum() + "\n"
+//                    + "message = " + result.getErrorMessage()
+//            );
+//            } 
+//        catch (Exception ex) {
+//                 ex.printStackTrace();
+//            }
+        // создание заказа
+//        try {
+//            DPDOrderService service = new DPDOrderService();
+//            DPDOrder port = service.getDPDOrderPort();
+//            // TODO process result here
+//            java.util.List<DpdOrderStatus> resultList = port.createOrder(orderData);
+//            DpdOrderStatus result = resultList.get(0);
+//            System.out.println("Status = "+result.getStatus()+"\n"
+//                    + "order = " + result.getOrderNum() + "\n"
+//                    + "message = " + result.getErrorMessage()
+//            );
+//            } 
+//        catch (Exception ex) {
+//                 ex.printStackTrace();
+//            }
+        // получение статуса заказа
+        try {
+            DpdGetOrderStatus orderParam = new DpdGetOrderStatus();
+            orderParam.setAuth(auth);
+
+            InternalOrderNumber invoiceId = new InternalOrderNumber();
+            invoiceId.setOrderNumberInternal("PS-12345");
+            orderParam.getOrder().add(invoiceId);
+
             DPDOrderService service = new DPDOrderService();
             DPDOrder port = service.getDPDOrderPort();
-            // TODO initialize WS operation arguments here
-            // 
-            result = port.createAddress(clientAddr);
+            java.util.List<DpdOrderStatus> resultStatusList = port.getOrderStatus(orderParam);
+            DpdOrderStatus result = resultStatusList.get(0);
+            System.out.println("\n\nStatus = " + result.getStatus() + "\n"
+                    + "order = " + result.getOrderNum() + "\n"
+                    + "message = " + result.getErrorMessage()
+            );
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            // TODO handle custom exceptions here
         }
-
-        return result;
-
     }
-    
-    DpdClientAddressStatus updateDPDAddress(ClientRetailAddress address)  {
-        
-        DpdClientAddress clientAddr = new DpdClientAddress();
 
-//        List<DPDConfig> dpdConfigList = dpdConfigService.selectAll();
-//        DPDConfig dpdConfig = dpdConfigList.get(0);
-
-        Auth auth = new Auth();
-//        auth.setClientKey(dpdConfig.getDpdClientKey());
-//        auth.setClientNumber(dpdConfig.getDpdClientNumber());
-        auth.setClientKey("B84F9A71593C7A830014C297E7FF14A2502CC7FB");
-        auth.setClientNumber(1002017631);
-        clientAddr.setAuth(auth);
-
-        
-        ParsedDPDAddress parsedAddr = new ParsedDPDAddress();
-        parseAddressForDPD(parsedAddr, address);
-        
-        ClientAddress dpdAddress = new ClientAddress();
-
-        dpdAddress.setCode(address.getClientRetailAddressId().toString());
-        dpdAddress.setName("ООО Ин-Ритейл");
-    //        senderAddr.setTerminalCode("187850978"); // УЗНАТЬ где брать коды терминалов
-        dpdAddress.setCountryName("Россия");
-//        senderAddr.setIndex("194294");
-//        dpdAddress.setRegion("Санкт-Петербург");
-        dpdAddress.setCity(address.getClientRetailAddressCity());
-        dpdAddress.setStreet(parsedAddr.getStreet());
-        dpdAddress.setStreetAbbr(parsedAddr.getStreetAbbr());
-        dpdAddress.setHouse(address.getClientRetailAddressHouseNumber());
-        dpdAddress.setHouseKorpus(address.getClientRetailAddressHouseCase());
-        dpdAddress.setFlat(address.getClientRetailAddressApartment());
-        dpdAddress.setContactFio("Иванов Андрей Вячеславович");
-        dpdAddress.setContactPhone("89052833938");
-    //        senderAddr.setContactEmail("test@test.com");
-    //        senderAddr.setInstructions("подъезд со стороны двора");
-        
-        clientAddr.setClientAddress(dpdAddress);
-
-        DpdClientAddressStatus result = new DpdClientAddressStatus();
-        
-        try { // Call Web Service Operation
-            DPDOrderService service = new DPDOrderService();
-            DPDOrder port = service.getDPDOrderPort();
-            // TODO initialize WS operation arguments here
-            // 
-            result = port.updateAddress(clientAddr);
-
-            System.out.println("Result = "+result);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // TODO handle custom exceptions here
+    public List<DpdOrderStatus> getResult(DPDOrder service, DpdOrdersData ordersData) {
+        try {
+            final List<DpdOrderStatus> orderStatusList = service.createOrder(ordersData);
+            return orderStatusList;
+        } catch (WSFault_Exception e) {
+            System.err.println("WSFault: " + e.getFaultInfo().getCode() + " / " + e.getFaultInfo().getMessage());
+        } catch (Throwable e) {
+            System.err.println("Fatal error: " + e);
         }
+        return null;
+    }
 
-        return result;
-    }
-    
-    
-    
-    ClientAddress fillDPDAddressFromInvoice(Invoice invoice){
-        ClientAddress dpdAddress = new ClientAddress();
-        ClientRetailAddress cra = invoice.getClientRetailAddress();
-        InvoiceRecipient recipient = invoice.getInvoiceRecipient();
-        
-        dpdAddress.setCode(cra.getClientRetailAddressId().toString());
-        
-        dpdAddress.setRegion(cra.getClientRetailAddressRegion());
-        dpdAddress.setCity(cra.getClientRetailAddressCity());
-        dpdAddress.setStreet(cra.getClientRetailAddressStreet());
-        dpdAddress.setHouse(cra.getClientRetailAddressHouseNumber());
-        dpdAddress.setHouseKorpus(cra.getClientRetailAddressHouseCase());
-        dpdAddress.setFlat(cra.getClientRetailAddressApartment());
-        
-        dpdAddress.setContactFio(recipient.getRecipientName());
-        dpdAddress.setContactEmail(recipient.getRecipientEmail());
-        dpdAddress.setContactPhone(recipient.getRecipientPhone());
-        
-        dpdAddress.setInstructions(invoice.getInvoiceComment());
-    
-        return dpdAddress;
-    }
-    
-    
-    
     
 }
